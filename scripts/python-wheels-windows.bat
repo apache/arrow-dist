@@ -24,7 +24,7 @@ conda create -n arrow -q -y python=%PYTHON% ^
 
 conda install -n arrow -q -y -c conda-forge ^
       flatbuffers rapidjson ^
-      cmake git boost-cpp thrift-cpp snappy zlib brotli zstd lz4-c
+      cmake git boost-cpp thrift-cpp gflags snappy zlib brotli zstd lz4-c
 
 call activate arrow
 
@@ -52,6 +52,7 @@ pushd %ARROW_SRC%\cpp\build
 cmake -G "%GENERATOR%" ^
       -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%\Library ^
       -DARROW_BOOST_USE_SHARED=OFF ^
+      -DARROW_BUILD_TESTS=OFF ^
       -DCMAKE_BUILD_TYPE=Release ^
       -DARROW_CXXFLAGS="/MP" ^
       -DARROW_PYTHON=ON ^
