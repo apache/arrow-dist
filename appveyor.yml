@@ -32,7 +32,7 @@ environment:
   BOOST_ROOT: C:\Libraries\boost_1_63_0
   BOOST_LIBRARYDIR: C:\Libraries\boost_1_63_0\lib64-msvc-14.0
   pyarrow_version: 0.5.0
-  pyarrow_commit: e9f76e125b836d0fdc0a533e2fee3fca8bf4c1a1
+  pyarrow_commit: dca5d96c7a029c079183e2903db425e486e2deb9
   parquet_commit: cbdd9560e45187a4b3b39728986a2ef0d5ed07db
 
 init:

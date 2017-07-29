@@ -22,9 +22,13 @@ conda update --yes --quiet conda
 conda create -n arrow -q -y python=%PYTHON% ^
       six pytest setuptools numpy=%NUMPY% pandas cython
 
+set ARROW_CMAKE_VERSION=3.8.0
+
 conda install -n arrow -q -y -c conda-forge ^
-      flatbuffers rapidjson ^
-      cmake git boost-cpp thrift-cpp gflags snappy zlib brotli zstd lz4-c
+      git flatbuffers rapidjson ^
+      cmake=%ARROW_CMAKE_VERSION% ^
+      boost-cpp thrift-cpp ^
+      gflags snappy zlib brotli zstd lz4-c
 
 call activate arrow
 
