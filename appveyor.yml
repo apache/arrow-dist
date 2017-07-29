@@ -1,0 +1,63 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Operating system (build VM template)
+os: Visual Studio 2015
+
+environment:
+  matrix:
+    - GENERATOR: Visual Studio 14 2015 Win64
+      NUMPY: "1.13"
+      PYTHON: "3.5"
+      ARCH: "64"
+    - GENERATOR: Visual Studio 14 2015 Win64
+      NUMPY: "1.13"
+      PYTHON: "3.6"
+      ARCH: "64"
+  MSVC_DEFAULT_OPTIONS: ON
+  BOOST_ROOT: C:\Libraries\boost_1_63_0
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_63_0\lib64-msvc-14.0
+  pyarrow_version: 0.5.0
+  pyarrow_commit: dca5d96c7a029c079183e2903db425e486e2deb9
+  parquet_commit: cbdd9560e45187a4b3b39728986a2ef0d5ed07db
+
+init:
+  - set MINICONDA=C:\Miniconda35-x64
+  - set PATH=%MINICONDA%;%MINICONDA%/Scripts;%MINICONDA%/Library/bin;%PATH%
+
+build_script:
+  - cmd: mkdir wheels
+  - call scripts\python-wheels-windows.bat
+
+after_build:
+  xcopy C:\apache-arrow\python\dist\* wheels\
+
+artifacts:
+  - path: wheels\*.whl
+
+deploy:
+  - provider: BinTray
+    username: wesm
+    api_key:
+      secure: T6rUTOWbyxuculsGAsKosSLEdQnY+B6Vlp7bWXdA7zLYgBFfJ7sA73JOigjA6jW+
+    subject: wesm
+    repo: pyarrow-windows-wheels
+    package: pyarrow
+    version: "%pyarrow_version%"
+    publish: true
+    public: true
+    override: true
