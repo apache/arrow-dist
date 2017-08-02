@@ -17,4 +17,4 @@
   under the License.
 -->
 
-## Build scripts and Packaging Automation for Apache Arrow
+# MacOS wheels for pyarrow

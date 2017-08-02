@@ -1,0 +1,20 @@
+{
+    "package": {
+        "name": "pyarrow",
+        "repo": "pyarrow-macos-wheels",
+        "subject": "xhochy"
+    },
+    "version": {
+        "name": "0.5.1.dev1"
+    },
+    "files": [
+        {
+            "includePattern": "macos/arrow/python/dist/(.*\\.whl)",
+            "uploadPattern": "wheels/$1",
+            "matrixParams": {
+                "override": 1
+            }
+        }
+    ],
+    "publish": true
+}

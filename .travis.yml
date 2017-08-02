@@ -15,24 +15,62 @@
 # specific language governing permissions and limitations
 # under the License.
 
+env:
+  global:
+  - PLAT=x86_64
+  - BUILD_COMMIT=e9f76e125b836d0fdc0a533e2fee3fca8bf4c1a1
+language: python
+python: 3.5
 sudo: required
 dist: trusty
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-4.9   # Needed for C++11
-    - g++-4.9   # Needed for C++11
-    - gdb
-    - ccache
-    - valgrind
-    - libboost-dev
-    - libboost-filesystem-dev
-    - libboost-system-dev
-    - libjemalloc-dev
-    - gtk-doc-tools
-    - autoconf-archive
-    - libgirepository1.0-dev
-
 matrix:
+  exclude:
+  - python: 3.5
+  include:
+  - os: osx
+    language: objective-c
+    env:
+    - MB_PYTHON_VERSION=2.7
+    - NP_BUILD_DEP=1.10.1
+    - NP_TEST_DEP=1.10.1
+    - PANDAS_DEP="0.20.2"
+  - os: osx
+    language: objective-c
+    env:
+    - MB_PYTHON_VERSION=3.5
+    - NP_BUILD_DEP="1.10.1"
+    - NP_TEST_DEP="1.10.1"
+    - PANDAS_DEP="0.20.2"
+  - os: osx
+    language: objective-c
+    env:
+    - MB_PYTHON_VERSION=3.6
+    - NP_BUILD_DEP="1.11.3"
+    - NP_TEST_DEP="1.11.3"
+    - PANDAS_DEP="0.20.2"
+before_install:
+- brew uninstall boost
+- brew update
+- brew upgrade cmake
+- BUILD_DEPENDS="numpy==$NP_BUILD_DEP six cython"
+- TEST_DEPENDS="numpy==$NP_TEST_DEP six pandas==$PANDAS_DEP"
+- pushd python-macos
+- source multibuild/common_utils.sh
+- source multibuild/travis_steps.sh
+- before_install
+install:
+- clean_code arrow $BUILD_COMMIT
+- build_wheel arrow $PLAT
+script:
+- echo "SCRIPT"
+- pwd
+after_success:
+- echo "After success"
+- pwd
+
+deploy:
+  provider: bintray
+  file: "python-macos/descriptor.json"
+  user: xhochy
+  key:
+    secure: Fb4R4YAhTCXGtavVB4CtHzWkQeJiny4rAuyJbScgQkaqaT7SG+rywA8pIOHPSSPf8yRiz25Z/+8aVEFvWqcHLQtFf8peTiJMmqYoMCQf4WjV1wldDwysr+NinGs0jbEAqAWJ127mNLELdn1wIduBXupgTG8MKFH+aR2O8Rdi2S5Od6Xk1TPLlEsvSlsN4IHGKN7qHsCeiMbzPM/R3lWyaNa92m1qhd2K8ypUtBPKgqemp0ZKrNHTDmAs6PmCNryPLA71jcwA9mPwVRfV+H6/4xNKpnQkFC2TfMok7JeMvru4wKhgWtmU0J0t4LYHqNcNQyhqlQD60VEwNs987bTPTKRPbORdgyP1v/ArthQEDD61o7V8jazoXudL8SwQj/mFPzF+o1t5D06300MCesSijuo0UgvvbtyZHN8SzudxUCZSrB+mSXeJ5GR2viSY3ndxqwPH2wMi/ZzO93Qxr2b8G7gTwDrX9ffhRkSL/NchdxRuUwOf5ejp8Yy2qVyjFMEMZWNemNhsFg4qDCAxv0pnAk/0N0kPE0wXrVbQW3kK/JywtV03r8GNiemqfm23d4KTwPH21FU4FpCbEpT4S7yUzBju4xpY9JyPBnvi8ZeQoqG5FUv+CcMUiCf2nPdil9RAs1maK2D6WPnSI02AicIkY0bv8/gXTsSgXzncOsxi/+E=
