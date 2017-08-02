@@ -2,5 +2,5 @@
 	path = python-macos/multibuild
 	url = https://github.com/matthew-brett/multibuild.git
 [submodule "arrow"]
-	path = python-macos/arrow
+	path = arrow
 	url = https://github.com/apache/arrow.git
