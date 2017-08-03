@@ -60,7 +60,6 @@ matrix:
     before_install:
     install:
     script:
-    - source $TRAVIS_BUILD_DIR/scripts/build_manylinux1.sh
     - pushd arrow/python/manylinux1
     - git clone ../../ arrow
     - docker build -t arrow-base-x86_64 -f Dockerfile-x86_64 .
