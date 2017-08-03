@@ -55,7 +55,7 @@ deploy:
     api_key:
       secure: T6rUTOWbyxuculsGAsKosSLEdQnY+B6Vlp7bWXdA7zLYgBFfJ7sA73JOigjA6jW+
     subject: wesm
-    repo: pyarrow-windows-wheels
+    repo: apache-arrow-test
     package: pyarrow
     version: "%pyarrow_version%"
     publish: true

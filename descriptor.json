@@ -1,8 +1,8 @@
 {
     "package": {
         "name": "pyarrow",
-        "repo": "pyarrow-macos-wheels",
-        "subject": "xhochy"
+        "repo": "apache-arrow-test",
+        "subject": "wesm"
     },
     "version": {
         "name": "0.5.1.dev1"
