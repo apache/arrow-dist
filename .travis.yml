@@ -69,5 +69,7 @@ deploy:
   provider: bintray
   file: descriptor.json
   user: wesm
+  on:
+    all_branches: true
   key:
     secure: nuErTGtf9e3itkAe4gODHMG7jxjW8PiDargOP4df5DntE9c3TtfV7lzIRc0YmARDLPbe4tKbBd9+Sv6deimAd6ZFWYhQALVKWEANVK+ROeH6rusq60rdxiDpdtWqTF+yXqcYk76J1ifdtPtFW1wHkXfEcnmQhP93PijIiT0+oiXN4BjdReSr0FKqDqc3ZlNu6dwx6Bb0P/IJkvAKb0V6cQwfWn2vRuQj2YcOwGPHDUDyH2/b5lCR+3egLu5DiwEvGlXsUtOIMmWoBmkoTAUkE2SO9ZToZHW9+xCIzOlQYqm35t+aknItmcmbGMfdGoo4ImDdLzo4wjFSt+sjRIKvC90ondtom6ZKc3Z+KJFzuAfmnZMT23RjgcohaDoh8g269tew/5dZdQRO5GJrtV/85Ou6a3ka+rOU1bdxQ0OcOJRWsDKm+gqWRwpikUU29+a4sREKhLp8wdOocmTSlL2lcysDppogVAqvVNt2k8HJBWWbdocYDd1EgMl3cPY+HDNPfz+60nLU0X2CegSmIbL5qLqjfVcdrPDQRFa+GZCzQl7K5uGA/EbINn1L6CUn+V0PMB6Zbe649IJrtn/haGgdGBoGibajZAEuiUVkLXpFfV6XBG1dfOwY+F4QtqxbcTKoMBI1l/qEMO6WLf+W/pBmE4HqPa0epmWFj2pqdzbwBzE=
