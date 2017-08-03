@@ -37,8 +37,8 @@ matrix:
     os: linux
     before_script:
     - docker pull quay.io/xhochy/arrow_manylinux1_x86_64_base:latest
-    before_install: 
-    install: 
+    before_install:
+    install:
     script:
     - mkdir -p dist
     - pushd arrow/python/manylinux1
@@ -47,7 +47,7 @@ matrix:
     - docker run --shm-size=2g --rm -e PYARROW_PARALLEL=3 -v $PWD:/io arrow-base-x86_64
       /io/build_arrow.sh
     - popd
-    - mv arrow/python/manylinux1/dist/* dist/
+    - sudo mv arrow/python/manylinux1/dist/* dist/
 before_install:
 - brew uninstall boost
 - brew update
