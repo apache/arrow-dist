@@ -1,38 +1,82 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-
+env:
+  global:
+  - PLAT=x86_64
+  - BUILD_COMMIT=e9f76e125b836d0fdc0a533e2fee3fca8bf4c1a1
+language: python
+python: 3.5
 sudo: required
 dist: trusty
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-4.9   # Needed for C++11
-    - g++-4.9   # Needed for C++11
-    - gdb
-    - ccache
-    - valgrind
-    - libboost-dev
-    - libboost-filesystem-dev
-    - libboost-system-dev
-    - libjemalloc-dev
-    - gtk-doc-tools
-    - autoconf-archive
-    - libgirepository1.0-dev
-
+services:
+- docker
 matrix:
+  exclude:
+  - python: 3.5
+  include:
+  - os: osx
+    language: objective-c
+    env:
+    - MB_PYTHON_VERSION=2.7
+    - NP_BUILD_DEP=1.10.1
+    - NP_TEST_DEP=1.10.1
+    - PANDAS_DEP="0.20.2"
+  - os: osx
+    language: objective-c
+    env:
+    - MB_PYTHON_VERSION=3.5
+    - NP_BUILD_DEP="1.10.1"
+    - NP_TEST_DEP="1.10.1"
+    - PANDAS_DEP="0.20.2"
+  - os: osx
+    language: objective-c
+    env:
+    - MB_PYTHON_VERSION=3.6
+    - NP_BUILD_DEP="1.11.3"
+    - NP_TEST_DEP="1.11.3"
+    - PANDAS_DEP="0.20.2"
+  - language: cpp
+    os: linux
+    before_script:
+    - docker pull quay.io/xhochy/arrow_manylinux1_x86_64_base:latest
+    before_install: 
+    install: 
+    script:
+    - mkdir -p dist
+    - pushd arrow/python/manylinux1
+    - git clone ../../ arrow
+    - docker build -t arrow-base-x86_64 -f Dockerfile-x86_64 .
+    - docker run --shm-size=2g --rm -e PYARROW_PARALLEL=3 -v $PWD:/io arrow-base-x86_64
+      /io/build_arrow.sh
+    - popd
+    - mv arrow/python/manylinux1/dist/* dist/
+before_install:
+- brew uninstall boost
+- brew update
+- brew upgrade cmake
+- BUILD_DEPENDS="numpy==$NP_BUILD_DEP six cython"
+- TEST_DEPENDS="numpy==$NP_TEST_DEP six pandas==$PANDAS_DEP"
+- mkdir -p dist
+- pushd python-macos
+- source multibuild/common_utils.sh
+- source multibuild/travis_steps.sh
+- before_install
+- popd
+install:
+- clean_code arrow $BUILD_COMMIT
+- build_wheel arrow $PLAT
+- mv arrow/python/dist/* dist/
+script:
+- echo "SCRIPT"
+- pwd
+after_success:
+- echo "After success"
+- pwd
+deploy:
+  provider: bintray
+  file: descriptor.json
+  user: wesm
+  on:
+    all_branches: true
+  key:
+    secure: A4A5y/NqAAMTHynW7G0NsUOcZkWxUU84YGw+2Ltne1zfhxcQW2hFT0JjT1eTxm0nWkWuQZfd6bXc2W2G5W0uEaq2U/u+6oCMLuNxvrjQTbHzWI4CSdEfZHm2EZq/BewYHbRwPmi97uscOkgYhYZRSh8KGJZjcLVGHpzZAoC3D69JA2mynWpFOqXIiaL3rznE2LBz8L0UbttUnxTvgt8/yFJIbaPWzsoeS++T+DaFAm4GesY38uZ2NIq9OR62rlGre/ye/KBXsHkAzSlCbvIJgNvrAxId0GHCP5jEF389r8C5w+nttmLoCvyDvKRV5XcIeIACUlVdl01vcPs65LhBWqKE6wTo+2Vx1Zw+HWrfVsO6fINhbuJ+Uler2Zkq//chRRNtbzjI3so8VCBpQD+12O4Nlsfe6JJjgKgzhPNAQFSuE2cp8p6+Qs5FujKaVkVqYjhN8wH7U5nGuqM51ed8EeI1LuJgZ4i4NnoVHWBT7IU6A25Aa/dvMmp7TDLk9DuE4r4LsAGB89dt4smTEuD34nsfKcTIEoWqSfVZpGzcfKvP3MKfmOl8B1vVetjh+aTvCcA9XkiIBjsvmhzQo7vVEWrU15Sx0l6W3WGQMomrVwLvNOTiGpzJ8t0ohPyFDHDZXpp28SfUizFUDfPCkp7GBGF9fgwWLkEhh7hcuvXHhpI=
+e383dd8d29452415f9d499c2805b42b4f1ff9787:
+  secure: YaFLnyewVMX4hb2HMWb9mCS1FqaPy91AUdYMJQ8ZiPdMRHKXfm4lCNTtBAopqtwzB+KpS1ej1Wo4UBQSyrhLnlyHSPZdZ/nuXbkU6qCBExqbG2yydmfX7aYifzKtNvzzzRzfueBdeZzPgvXX7A1jKig9W1JdIdaUEZ4751BGe1meF1HMKYed4mm4XQiF1BRyK194To213iS9+ponoT9l2mYkUEK6gtJ60AAtYnkBPNgkEgtezDsTE89VXuazqyPe3hgWvGSOdsFmEcJHwMlTVSwBK3LrgnMfT5WN7aXZQyzwoIlc4q3yPNJr3cs+iXY9anWo/qNT5i0IoIlRYj3Dsx8uCdEO0sud7M0khgMq6j9euCfLp1wZ6Zo9DjVP7fLznrmQ2gBXeHvzAbIP/1ToiL6RHc7UuPV/aLdpy4QG6rOT69LBizyZVvv7M+8EaOz9lRYbz14rNfrHmzu6GMv1/u80TfklziUGHtTe4sGBDTXbsWPL9xbix7l8nKQxPaEJ7KZq0kgPgi9BYX8Cy4xd5TvOjps0SsWdpocWbfrY/RRcEIjc2KiWm2MBHarcxfLG0hJhH2Af6SS7/9BpNlNePAwNsa+yg1vFsQiG9StVi2MjPyEJ2yhFTjuKo8WWen7d/I7LJDUM65KgCCp8dpMjnwvQZHLRW/2rig31r96e7vY=

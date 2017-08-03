@@ -1,0 +1,20 @@
+{
+    "package": {
+        "name": "pyarrow",
+        "repo": "apache-arrow-test",
+        "subject": "wesm"
+    },
+    "version": {
+        "name": "0.5.1.dev1"
+    },
+    "files": [
+        {
+            "includePattern": "dist/(.*\\.whl)",
+            "uploadPattern": "wheels/$1",
+            "matrixParams": {
+                "override": 1
+            }
+        }
+    ],
+    "publish": true
+}
