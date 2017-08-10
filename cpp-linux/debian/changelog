@@ -1,0 +1,5 @@
+apache-arrow (0.6.0.20170802-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Wed, 02 Aug 2017 22:28:18 -0000
