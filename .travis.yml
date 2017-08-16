@@ -1,7 +1,7 @@
 env:
   global:
   - PLAT=x86_64
-  - BUILD_COMMIT=e9f76e125b836d0fdc0a533e2fee3fca8bf4c1a1
+  - BUILD_REF=apache-arrow-0.6.0
 language: python
 python: 3.5
 sudo: required
@@ -18,21 +18,21 @@ matrix:
     - MB_PYTHON_VERSION=2.7
     - NP_BUILD_DEP=1.10.1
     - NP_TEST_DEP=1.10.1
-    - PANDAS_DEP="0.20.2"
+    - PANDAS_DEP="0.20.3"
   - os: osx
     language: objective-c
     env:
     - MB_PYTHON_VERSION=3.5
     - NP_BUILD_DEP="1.10.1"
     - NP_TEST_DEP="1.10.1"
-    - PANDAS_DEP="0.20.2"
+    - PANDAS_DEP="0.20.3"
   - os: osx
     language: objective-c
     env:
     - MB_PYTHON_VERSION=3.6
     - NP_BUILD_DEP="1.11.3"
     - NP_TEST_DEP="1.11.3"
-    - PANDAS_DEP="0.20.2"
+    - PANDAS_DEP="0.20.3"
   - language: cpp
     os: linux
     before_script:
@@ -61,7 +61,7 @@ before_install:
 - before_install
 - popd
 install:
-- clean_code arrow $BUILD_COMMIT
+- clean_code arrow $BUILD_REF
 - build_wheel arrow $PLAT
 - mv arrow/python/dist/* dist/
 script:

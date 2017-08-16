@@ -42,7 +42,18 @@ function build_wheel {
     pushd cpp
     mkdir build
     pushd build
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ARROW_HOME -DARROW_BUILD_TESTS=OFF -DARROW_BUILD_SHARED=ON -DARROW_BOOST_USE_SHARED=OFF -DARROW_JEMALLOC=ON -DARROW_RPATH_ORIGIN=ON -DARROW_JEMALLOC_USE_SHARED=OFF -DARROW_PYTHON=ON -DMAKE=make ..
+    cmake -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=$ARROW_HOME \
+          -DARROW_BUILD_TESTS=OFF \
+          -DARROW_BUILD_SHARED=ON \
+          -DARROW_BOOST_USE_SHARED=OFF \
+          -DARROW_JEMALLOC=OFF \
+          -DARROW_PLASMA=ON \
+          -DARROW_RPATH_ORIGIN=ON \
+          -DARROW_JEMALLOC_USE_SHARED=OFF \
+          -DARROW_PYTHON=ON \
+          -DMAKE=make \
+          ..
     make -j5
     make install
     popd
@@ -52,7 +63,12 @@ function build_wheel {
     pushd parquet-cpp
     mkdir build
     pushd build
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PARQUET_HOME -DPARQUET_BUILD_TESTS=OFF -DPARQUET_ARROW=ON -DPARQUET_BOOST_USE_SHARED=OFF ..
+    cmake -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=$PARQUET_HOME \
+          -DPARQUET_BUILD_TESTS=OFF \
+          -DPARQUET_ARROW=ON \
+          -DPARQUET_BOOST_USE_SHARED=OFF \
+          ..
     make -j5
     make install
     popd
@@ -62,11 +78,13 @@ function build_wheel {
     unset PARQUET_HOME
     export PYARROW_WITH_PARQUET=1
     export PYARROW_WITH_JEMALLOC=1
+    export PYARROW_WITH_PLASMA=1
     export PYARROW_BUNDLE_ARROW_CPP=1
     export PYARROW_BUILD_TYPE='release'
     pushd python
-    echo "python setup.py build_ext --inplace --with-parquet --bundle-arrow-cpp"
-    python setup.py build_ext --inplace --with-parquet --bundle-arrow-cpp
+    echo "python setup.py build_ext --inplace --with-parquet --with-plasma --bundle-arrow-cpp"
+    python setup.py build_ext --inplace \
+           --with-plasma --with-parquet --bundle-arrow-cpp
     python setup.py bdist_wheel
     ls -l dist/
     popd
