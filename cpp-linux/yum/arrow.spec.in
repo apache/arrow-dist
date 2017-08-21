@@ -220,5 +220,8 @@ Documentation for Apache Arrow GLib.
 %endif
 
 %changelog
+* Fri Aug 11 2017 Kouhei Sutou <kou@clear-code.com> - 0.6.0-1
+- New upstream release.
+
 * Wed Aug 02 2017 Kouhei Sutou <kou@clear-code.com> - 0.6.0.20170802-1
 - New upstream release.

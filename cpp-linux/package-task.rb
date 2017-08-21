@@ -57,9 +57,36 @@ class PackageTask
     end
   end
 
-  def run_vagrant(id)
-    sh("vagrant", "up", id)
-    sh("vagrant", "destroy", "--force", id)
+  def download(url, download_dir)
+    base_name = url.split("/").last
+    absolute_output_path = File.join(download_dir, base_name)
+
+    unless File.exist?(absolute_output_path)
+      mkdir_p(download_dir)
+      rake_output_message "Downloading... #{url}"
+      open(url) do |downloaded_file|
+        File.open(absolute_output_path, "wb") do |output_file|
+          output_file.print(downloaded_file.read)
+        end
+      end
+    end
+
+    absolute_output_path
+  end
+
+  def run_docker(id)
+    docker_tag = "#{@package}-#{id}"
+    sh("docker",
+       "build",
+       "--tag", docker_tag,
+       id)
+    sh("docker",
+       "run",
+       "--rm",
+       "--tty",
+       "--volume", "#{Dir.pwd}:/host:rw",
+       docker_tag,
+       "/host/build.sh")
   end
 
   def define_dist_task
@@ -89,7 +116,6 @@ class PackageTask
 SOURCE_ARCHIVE=#{@archive_name}
 PACKAGE=#{@rpm_package}
 VERSION=#{@version}
-DEPENDED_PACKAGES="#{rpm_depended_packages.join("\n")}"
           ENV
         end
 
@@ -113,22 +139,19 @@ DEPENDED_PACKAGES="#{rpm_depended_packages.join("\n")}"
         end
 
         cd(yum_dir) do
-          sh("vagrant", "destroy", "--force")
-          distribution_versions = {
-            "6" => ["x86_64"],
-            "7" => ["x86_64"],
-          }
+          distribution_versions = [
+            "6",
+            "7",
+          ]
           threads = []
-          distribution_versions.each do |ver, archs|
-            archs.each do |arch|
-              id = "#{distribution}-#{ver}-#{arch}"
-              if parallel_build?
-                threads << Thread.new(id) do |local_id|
-                  run_vagrant(local_id)
-                end
-              else
-                run_vagrant(id)
+          distribution_versions.each do |version|
+            id = "#{distribution}-#{version}"
+            if parallel_build?
+              threads << Thread.new(id) do |local_id|
+                run_docker(local_id)
               end
+            else
+              run_docker(id)
             end
           end
           threads.each(&:join)
@@ -150,17 +173,13 @@ DEPENDED_PACKAGES="#{rpm_depended_packages.join("\n")}"
         ["ubuntu", "16.04"],
         ["ubuntu", "17.04"],
       ]
-      architectures = [
-        "i386",
-        "amd64",
-      ]
       debian_dir = "debian"
       apt_dir = "apt"
       repositories_dir = "#{apt_dir}/repositories"
 
       directory repositories_dir
 
-      desc "Build DEB packages"
+      desc "Build deb packages"
       task :build => [@archive_name, repositories_dir] do
         tmp_dir = "#{apt_dir}/tmp"
         rm_rf(tmp_dir)
@@ -173,26 +192,19 @@ DEPENDED_PACKAGES="#{rpm_depended_packages.join("\n")}"
           file.puts(<<-ENV)
 PACKAGE=#{@package}
 VERSION=#{@version}
-DEPENDED_PACKAGES="#{deb_depended_packages.join("\n")}"
           ENV
         end
 
         cd(apt_dir) do
-          sh("vagrant", "destroy", "--force")
           threads = []
           code_names.each do |distribution, code_name|
-            architectures.each do |arch|
-              if arch == "i386"
-                next unless code_name == "17.04"
+            id = "#{distribution}-#{code_name}"
+            if parallel_build?
+              threads << Thread.new(id) do |local_id|
+                run_docker(local_id)
               end
-              id = "#{distribution}-#{code_name}-#{arch}"
-              if parallel_build?
-                threads << Thread.new(id) do |local_id|
-                  run_vagrant(local_id)
-                end
-              else
-                run_vagrant(id)
-              end
+            else
+              run_docker(id)
             end
           end
           threads.each(&:join)
