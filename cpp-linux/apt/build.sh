@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- sh-indentation: 2; sh-basic-offset: 2 -*-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -28,10 +29,7 @@ run()
   fi
 }
 
-. /vagrant/env.sh
-
-run sudo apt-get update
-run sudo apt-get install -y lsb-release
+. /host/env.sh
 
 distribution=$(lsb_release --id --short | tr 'A-Z' 'a-z')
 code_name=$(lsb_release --codename --short)
@@ -44,21 +42,18 @@ case "${distribution}" in
     ;;
 esac
 
-run sudo apt-get update
-run sudo apt-get install -V -y build-essential devscripts ${DEPENDED_PACKAGES}
-
 run mkdir -p build
-run cp /vagrant/tmp/${PACKAGE}-${VERSION}.tar.gz \
+run cp /host/tmp/${PACKAGE}-${VERSION}.tar.gz \
   build/${PACKAGE}_${VERSION}.orig.tar.gz
 run cd build
 run tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 run cd ${PACKAGE}-${VERSION}/
-run cp -rp /vagrant/tmp/debian debian
+run cp -rp /host/tmp/debian debian
 # export DEB_BUILD_OPTIONS=noopt
 run debuild -us -uc
 run cd -
 
 package_initial=$(echo "${PACKAGE}" | sed -e 's/\(.\).*/\1/')
-pool_dir="/vagrant/repositories/${distribution}/pool/${code_name}/${component}/${package_initial}/${PACKAGE}"
+pool_dir="/host/repositories/${distribution}/pool/${code_name}/${component}/${package_initial}/${PACKAGE}"
 run mkdir -p "${pool_dir}/"
 run cp *.tar.* *.dsc *.deb "${pool_dir}/"

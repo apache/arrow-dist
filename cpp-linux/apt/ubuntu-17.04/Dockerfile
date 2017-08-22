@@ -1,5 +1,3 @@
-# -*- ruby -*-
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -17,25 +15,27 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+FROM ubuntu:17.04
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  vms = [
-    {
-      :id => "centos-6-x86_64",
-      :box => "bento/centos-6.9",
-    },
-    {
-      :id => "centos-7-x86_64",
-      :box => "bento/centos-7.3",
-    },
-  ]
+ENV DEBIAN_FRONTEND noninteractive
 
-  vms.each do |vm|
-    config.vm.define(vm[:id]) do |node|
-      node.vm.box = vm[:box]
-      node.vm.provision(:shell, :path => "build-rpm.sh")
-    end
-  end
-end
+RUN \
+  apt update && \
+  apt install -y -V \
+    build-essential \
+    cmake \
+    debhelper\
+    devscripts \
+    git \
+    gtk-doc-tools \
+    libboost-filesystem-dev \
+    libboost-system-dev \
+    libgirepository1.0-dev \
+    libglib2.0-doc \
+    libjemalloc-dev \
+    lsb-release \
+    pkg-config \
+    python3-dev \
+    python3-numpy && \
+  apt clean && \
+  rm -rf /var/lib/apt/lists/*

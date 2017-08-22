@@ -29,7 +29,7 @@ run()
 
 rpmbuild_options=
 
-. /vagrant/env.sh
+. /host/env.sh
 
 distribution=$(cut -d " " -f 1 /etc/redhat-release | tr "A-Z" "a-z")
 if grep -q Linux /etc/redhat-release; then
@@ -46,26 +46,6 @@ case "${architecture}" in
     ;;
 esac
 
-run yum install -y epel-release
-run yum groupinstall -y "Development Tools"
-
-if [ "${distribution_version}" = 6 ]; then
-  # libarchive-3 is required for cmake3
-  srpm_download_url=http://vault.centos.org/7.3.1611/os/Source/SPackages
-  libarchive_srpm_base=libarchive-3.1.2-10.el7_2.src.rpm
-  run wget $srpm_download_url/$libarchive_srpm_base
-  run yum install -y yum-utils autoconf268
-  run yum-builddep -y --nogpgcheck $libarchive_srpm_base
-  run env AUTOM4TE=autom4te268 rpmbuild --rebuild $libarchive_srpm_base
-  run yum install -y ~/rpmbuild/RPMS/*/libarchive-3.*.rpm
-  run rm -rf ~/rpmbuild/
-
-  run yum install -y centos-release-scl
-  run yum install -y devtoolset-6
-fi
-
-run yum install -y rpm-build rpmdevtools tar ${DEPENDED_PACKAGES}
-
 if [ -x /usr/bin/rpmdev-setuptree ]; then
   rm -rf .rpmmacros
   run rpmdev-setuptree
@@ -80,7 +60,7 @@ EOM
   run mkdir -p ~/rpmbuild/SRPMS
 fi
 
-repository="/vagrant/repositories/${distribution}/${distribution_version}"
+repository="/host/repositories/${distribution}/${distribution_version}"
 rpm_dir="${repository}/${architecture}/Packages"
 srpm_dir="${repository}/source/SRPMS"
 run mkdir -p "${rpm_dir}" "${srpm_dir}"
@@ -91,12 +71,12 @@ run mkdir -p "${rpm_dir}" "${srpm_dir}"
 cd
 
 if [ -n "${SOURCE_ARCHIVE}" ]; then
-  run cp /vagrant/tmp/${SOURCE_ARCHIVE} rpmbuild/SOURCES/
+  run cp /host/tmp/${SOURCE_ARCHIVE} rpmbuild/SOURCES/
 else
-  run cp /vagrant/tmp/${PACKAGE}-${VERSION}.* rpmbuild/SOURCES/
+  run cp /host/tmp/${PACKAGE}-${VERSION}.* rpmbuild/SOURCES/
 fi
 run cp \
-    /vagrant/tmp/${distribution}/${PACKAGE}.spec \
+    /host/tmp/${distribution}/${PACKAGE}.spec \
     rpmbuild/SPECS/
 
 cat <<BUILD > build.sh
