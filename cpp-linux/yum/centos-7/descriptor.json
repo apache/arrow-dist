@@ -1,0 +1,20 @@
+{
+    "package": {
+        "name": "Yum: CentOS 7",
+        "repo": "apache-arrow-yum-centos-7",
+        "subject": "wesm"
+    },
+    "version": {
+        "name": "0.6.0"
+    },
+    "files": [
+        {
+            "includePattern": "cpp-linux/yum/repositories/centos/7/*/*/(.*\\.rpm)",
+            "uploadPattern": "$1",
+            "matrixParams": {
+                "override": 1
+            }
+        }
+    ],
+    "publish": true
+}

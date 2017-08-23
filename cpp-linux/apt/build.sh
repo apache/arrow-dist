@@ -50,7 +50,11 @@ run tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 run cd ${PACKAGE}-${VERSION}/
 run cp -rp /host/tmp/debian debian
 # export DEB_BUILD_OPTIONS=noopt
-run debuild -us -uc
+if [ "${DEBUG:-no}" = "yes" ]; then
+  run debuild -us -uc
+else
+  run debuild -us -uc > /dev/null
+fi
 run cd -
 
 package_initial=$(echo "${PACKAGE}" | sed -e 's/\(.\).*/\1/')

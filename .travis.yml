@@ -48,6 +48,51 @@ matrix:
       /io/build_arrow.sh
     - popd
     - sudo mv arrow/python/manylinux1/dist/* dist/
+  - language: ruby
+    os: linux
+    before_script:
+    before_install:
+    install:
+    script:
+    - (cd cpp-linux && travis_wait 30 rake apt:build PARALLEL=yes DEBUG=no)
+    deploy:
+      provider: bintray
+      file: cpp-linux/apt/descriptor.json
+      user: wesm
+      on:
+        all_branches: true
+      key:
+        secure: A4A5y/NqAAMTHynW7G0NsUOcZkWxUU84YGw+2Ltne1zfhxcQW2hFT0JjT1eTxm0nWkWuQZfd6bXc2W2G5W0uEaq2U/u+6oCMLuNxvrjQTbHzWI4CSdEfZHm2EZq/BewYHbRwPmi97uscOkgYhYZRSh8KGJZjcLVGHpzZAoC3D69JA2mynWpFOqXIiaL3rznE2LBz8L0UbttUnxTvgt8/yFJIbaPWzsoeS++T+DaFAm4GesY38uZ2NIq9OR62rlGre/ye/KBXsHkAzSlCbvIJgNvrAxId0GHCP5jEF389r8C5w+nttmLoCvyDvKRV5XcIeIACUlVdl01vcPs65LhBWqKE6wTo+2Vx1Zw+HWrfVsO6fINhbuJ+Uler2Zkq//chRRNtbzjI3so8VCBpQD+12O4Nlsfe6JJjgKgzhPNAQFSuE2cp8p6+Qs5FujKaVkVqYjhN8wH7U5nGuqM51ed8EeI1LuJgZ4i4NnoVHWBT7IU6A25Aa/dvMmp7TDLk9DuE4r4LsAGB89dt4smTEuD34nsfKcTIEoWqSfVZpGzcfKvP3MKfmOl8B1vVetjh+aTvCcA9XkiIBjsvmhzQo7vVEWrU15Sx0l6W3WGQMomrVwLvNOTiGpzJ8t0ohPyFDHDZXpp28SfUizFUDfPCkp7GBGF9fgwWLkEhh7hcuvXHhpI=
+  - language: ruby
+    os: linux
+    before_script:
+    before_install:
+    install:
+    script:
+    - (cd cpp-linux && travis_wait 30 rake yum:build CENTOS_VERSIONS=6 DEBUG=no)
+    deploy:
+      provider: bintray
+      file: cpp-linux/yum/centos-6/descriptor.json
+      user: wesm
+      on:
+        all_branches: true
+      key:
+        secure: A4A5y/NqAAMTHynW7G0NsUOcZkWxUU84YGw+2Ltne1zfhxcQW2hFT0JjT1eTxm0nWkWuQZfd6bXc2W2G5W0uEaq2U/u+6oCMLuNxvrjQTbHzWI4CSdEfZHm2EZq/BewYHbRwPmi97uscOkgYhYZRSh8KGJZjcLVGHpzZAoC3D69JA2mynWpFOqXIiaL3rznE2LBz8L0UbttUnxTvgt8/yFJIbaPWzsoeS++T+DaFAm4GesY38uZ2NIq9OR62rlGre/ye/KBXsHkAzSlCbvIJgNvrAxId0GHCP5jEF389r8C5w+nttmLoCvyDvKRV5XcIeIACUlVdl01vcPs65LhBWqKE6wTo+2Vx1Zw+HWrfVsO6fINhbuJ+Uler2Zkq//chRRNtbzjI3so8VCBpQD+12O4Nlsfe6JJjgKgzhPNAQFSuE2cp8p6+Qs5FujKaVkVqYjhN8wH7U5nGuqM51ed8EeI1LuJgZ4i4NnoVHWBT7IU6A25Aa/dvMmp7TDLk9DuE4r4LsAGB89dt4smTEuD34nsfKcTIEoWqSfVZpGzcfKvP3MKfmOl8B1vVetjh+aTvCcA9XkiIBjsvmhzQo7vVEWrU15Sx0l6W3WGQMomrVwLvNOTiGpzJ8t0ohPyFDHDZXpp28SfUizFUDfPCkp7GBGF9fgwWLkEhh7hcuvXHhpI=
+  - language: ruby
+    os: linux
+    before_script:
+    before_install:
+    install:
+    script:
+    - (cd cpp-linux && travis_wait 30 rake yum:build CENTOS_VERSIONS=7 DEBUG=no)
+    deploy:
+      provider: bintray
+      file: cpp-linux/yum/centos-7/descriptor.json
+      user: wesm
+      on:
+        all_branches: true
+      key:
+        secure: A4A5y/NqAAMTHynW7G0NsUOcZkWxUU84YGw+2Ltne1zfhxcQW2hFT0JjT1eTxm0nWkWuQZfd6bXc2W2G5W0uEaq2U/u+6oCMLuNxvrjQTbHzWI4CSdEfZHm2EZq/BewYHbRwPmi97uscOkgYhYZRSh8KGJZjcLVGHpzZAoC3D69JA2mynWpFOqXIiaL3rznE2LBz8L0UbttUnxTvgt8/yFJIbaPWzsoeS++T+DaFAm4GesY38uZ2NIq9OR62rlGre/ye/KBXsHkAzSlCbvIJgNvrAxId0GHCP5jEF389r8C5w+nttmLoCvyDvKRV5XcIeIACUlVdl01vcPs65LhBWqKE6wTo+2Vx1Zw+HWrfVsO6fINhbuJ+Uler2Zkq//chRRNtbzjI3so8VCBpQD+12O4Nlsfe6JJjgKgzhPNAQFSuE2cp8p6+Qs5FujKaVkVqYjhN8wH7U5nGuqM51ed8EeI1LuJgZ4i4NnoVHWBT7IU6A25Aa/dvMmp7TDLk9DuE4r4LsAGB89dt4smTEuD34nsfKcTIEoWqSfVZpGzcfKvP3MKfmOl8B1vVetjh+aTvCcA9XkiIBjsvmhzQo7vVEWrU15Sx0l6W3WGQMomrVwLvNOTiGpzJ8t0ohPyFDHDZXpp28SfUizFUDfPCkp7GBGF9fgwWLkEhh7hcuvXHhpI=
 before_install:
 - brew uninstall boost
 - brew update

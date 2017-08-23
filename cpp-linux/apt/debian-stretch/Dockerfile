@@ -19,9 +19,12 @@ FROM debian:stretch
 
 ENV DEBIAN_FRONTEND noninteractive
 
+ARG DEBUG
+
 RUN \
-  apt update && \
-  apt install -y -V \
+  quiet=$([ "${DEBUG}" = "yes" ] || echo "-qq") && \
+  apt update ${quiet} && \
+  apt install -y -V ${quiet} \
     build-essential \
     cmake \
     debhelper\

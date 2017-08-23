@@ -17,11 +17,14 @@
 
 FROM centos:7
 
+ARG DEBUG
+
 RUN \
-  yum update && \
-  yum install -y epel-release && \
-  yum groupinstall -y "Development Tools" && \
-  yum install -y \
+  quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
+  yum update ${quiet} && \
+  yum install -y ${quiet} epel-release && \
+  yum groupinstall -y ${quiet} "Development Tools" && \
+  yum install -y ${quiet} \
     boost-devel \
     cmake3 \
     git \
@@ -35,4 +38,4 @@ RUN \
     rpm-build \
     rpmdevtools \
     tar && \
-  yum clean all
+  yum clean ${quiet} all
