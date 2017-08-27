@@ -1,0 +1,23 @@
+{
+    "package": {
+        "name": "APT",
+        "repo": "apache-arrow-apt",
+        "subject": "wesm"
+    },
+    "version": {
+        "name": "0.6.0"
+    },
+    "files": [
+        {
+            "includePattern": "cpp-linux/apt/repositories/*/pool/(*)/(*)/a/apache-arrow/(.*\\.deb)",
+            "uploadPattern": "$3",
+            "matrixParams": {
+                "deb_distribution": "$1",
+                "deb_component": "$2",
+                "deb_architecture": "amd64",
+                "override": 1
+            }
+        }
+    ],
+    "publish": true
+}

@@ -86,9 +86,17 @@ rpmbuild -ba ${rpmbuild_options} rpmbuild/SPECS/${PACKAGE}.spec
 BUILD
 run chmod +x build.sh
 if [ "${distribution_version}" = 6 ]; then
-  run scl enable devtoolset-6 ./build.sh
+  if [ "${DEBUG:-no}" = "yes" ]; then
+    run scl enable devtoolset-6 ./build.sh
+  else
+    run scl enable devtoolset-6 ./build.sh > /dev/null
+  fi
 else
-  run ./build.sh
+  if [ "${DEBUG:-no}" = "yes" ]; then
+    run ./build.sh
+  else
+    run ./build.sh > /dev/null
+  fi
 fi
 
 run mv rpmbuild/RPMS/*/* "${rpm_dir}/"

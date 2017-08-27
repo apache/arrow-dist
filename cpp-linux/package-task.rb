@@ -51,6 +51,10 @@ class PackageTask
     ENV["PARALLEL"] == "yes"
   end
 
+  def debug_build?
+    ENV["DEBUG"] != "no"
+  end
+
   def latest_commit_time(git_directory)
     cd(git_directory) do
       return Time.iso8601(`git log -n 1 --format=%aI`.chomp).utc
@@ -76,17 +80,27 @@ class PackageTask
 
   def run_docker(id)
     docker_tag = "#{@package}-#{id}"
-    sh("docker",
-       "build",
-       "--tag", docker_tag,
-       id)
-    sh("docker",
-       "run",
-       "--rm",
-       "--tty",
-       "--volume", "#{Dir.pwd}:/host:rw",
-       docker_tag,
-       "/host/build.sh")
+    build_command_line = [
+      "docker",
+      "build",
+      "--tag", docker_tag,
+    ]
+    run_command_line = [
+      "docker",
+      "run",
+      "--rm",
+      "--tty",
+      "--volume", "#{Dir.pwd}:/host:rw",
+    ]
+    if debug_build?
+      build_command_line.concat(["--build-arg", "DEBUG=yes"])
+      run_command_line.concat(["--env", "DEBUG=yes"])
+    end
+    build_command_line << id
+    run_command_line.concat([docker_tag, "/host/build.sh"])
+
+    sh(*build_command_line)
+    sh(*run_command_line)
   end
 
   def define_dist_task
@@ -139,10 +153,7 @@ VERSION=#{@version}
         end
 
         cd(yum_dir) do
-          distribution_versions = [
-            "6",
-            "7",
-          ]
+          distribution_versions = (ENV["CENTOS_VERSIONS"] || "6,7").split(",")
           threads = []
           distribution_versions.each do |version|
             id = "#{distribution}-#{version}"

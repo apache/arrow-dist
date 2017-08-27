@@ -17,28 +17,33 @@
 
 FROM centos:6
 
+ARG DEBUG
+
 ENV \
   SRPM_DOWNLOAD_URL=http://vault.centos.org/7.3.1611/os/Source/SPackages \
   LIBARCHIVE_SRPM_BASE=libarchive-3.1.2-10.el7_2.src.rpm
 
 RUN \
-  yum update && \
-  yum install -y \
+  quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
+  yum update ${quiet} && \
+  yum install -y ${quiet} \
     centos-release-scl \
     epel-release && \
   yum install -y \
     autoconf268 \
     wget \
     yum-utils && \
-  yum groupinstall -y "Development Tools" && \
-  wget ${SRPM_DOWNLOAD_URL}/${LIBARCHIVE_SRPM_BASE} && \
-  yum-builddep -y --nogpgcheck ${LIBARCHIVE_SRPM_BASE} && \
-  rpm -i ${LIBARCHIVE_SRPM_BASE} && \
+  yum groupinstall -y ${quiet} "Development Tools" && \
+  wget ${quiet} ${SRPM_DOWNLOAD_URL}/${LIBARCHIVE_SRPM_BASE} && \
+  yum-builddep -y ${quiet} --nogpgcheck ${LIBARCHIVE_SRPM_BASE} && \
+  rpm -i ${quiet} ${LIBARCHIVE_SRPM_BASE} && \
   sed -i'' -e 's/^run_autotests$/:/g' ~/rpmbuild/SPECS/libarchive.spec && \
-  AUTOM4TE=autom4te268 rpmbuild -bb ~/rpmbuild/SPECS/libarchive.spec && \
-  yum install -y ~/rpmbuild/RPMS/*/libarchive-3.*.rpm && \
+  AUTOM4TE=autom4te268 \
+    rpmbuild -bb ${quiet} \
+    ~/rpmbuild/SPECS/libarchive.spec && \
+  yum install -y ${quiet} ~/rpmbuild/RPMS/*/libarchive-3.*.rpm && \
   rm -rf ${LIBARCHIVE_SRPM_BASE} ~/rpmbuild/ && \
-  yum install -y \
+  yum install -y ${quiet} \
     boost-devel \
     centos-release-scl \
     cmake3 \
@@ -54,4 +59,4 @@ RUN \
     rpm-build \
     rpmdevtools \
     tar && \
-  yum clean all
+  yum clean ${quiet} all
