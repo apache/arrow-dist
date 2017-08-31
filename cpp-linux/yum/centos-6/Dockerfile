@@ -25,7 +25,7 @@ ENV \
 
 RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
-  yum update ${quiet} && \
+  yum update -y ${quiet} && \
   yum install -y ${quiet} \
     centos-release-scl \
     epel-release && \
