@@ -24,7 +24,7 @@
             "includePattern": "cpp-linux/apt/repositories/([^/]+)/pool/trusty/universe/a/apache-arrow/([^/]+\\.deb)\\z",
             "uploadPattern": "pool/trusty/universe/$2",
             "matrixParams": {
-                "deb_distribution": "truscy",
+                "deb_distribution": "trusty",
                 "deb_component": "universe",
                 "deb_architecture": "amd64",
                 "override": 1
