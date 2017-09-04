@@ -179,11 +179,6 @@ VERSION=#{@version}
 
   def define_apt_task
     namespace :apt do
-      code_names = [
-        ["debian", "stretch"],
-        ["ubuntu", "16.04"],
-        ["ubuntu", "17.04"],
-      ]
       debian_dir = "debian"
       apt_dir = "apt"
       repositories_dir = "#{apt_dir}/repositories"
@@ -208,8 +203,16 @@ VERSION=#{@version}
 
         cd(apt_dir) do
           threads = []
-          code_names.each do |distribution, code_name|
-            id = "#{distribution}-#{code_name}"
+          targets = (ENV["APT_TARGETS"] || "").split(",")
+          if targets.empty?
+            targets = [
+              "debian-stretch",
+              "ubuntu-16.04",
+              "ubuntu-17.04",
+            ]
+          end
+          targets.each do |target|
+            id = target
             if parallel_build?
               threads << Thread.new(id) do |local_id|
                 run_docker(local_id)
