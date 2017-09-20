@@ -32,6 +32,7 @@ run()
 . /host/env.sh
 
 distribution=$(lsb_release --id --short | tr 'A-Z' 'a-z')
+release=$(lsb_release --release --short)
 code_name=$(lsb_release --codename --short)
 case "${distribution}" in
   debian)
@@ -48,7 +49,11 @@ run cp /host/tmp/${PACKAGE}-${VERSION}.tar.gz \
 run cd build
 run tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 run cd ${PACKAGE}-${VERSION}/
-run cp -rp /host/tmp/debian debian
+if [ "$distribution" = "ubuntu" ] && [ "$release" = "14.04" ]; then
+  run cp -rp /host/tmp/debian.ubuntu-14.04 debian
+else
+  run cp -rp /host/tmp/debian debian
+fi
 # export DEB_BUILD_OPTIONS=noopt
 if [ "${DEBUG:-no}" = "yes" ]; then
   run debuild -us -uc
