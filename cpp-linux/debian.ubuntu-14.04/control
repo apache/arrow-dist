@@ -10,8 +10,6 @@ Build-Depends:
   libboost-system-dev,
   libboost-filesystem-dev,
   libjemalloc-dev,
-  python3-dev,
-  python3-numpy,
   libgirepository1.0-dev,
   gtk-doc-tools,
   gobject-introspection
@@ -31,21 +29,6 @@ Depends:
 Description: Apache Arrow is a data processing library for analysis
  .
  This package provides library files.
-
-Package: libarrow-python0
-Section: libs
-Architecture: any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends:
-  ${misc:Depends},
-  ${shlibs:Depends},
-  libarrow0 (= ${binary:Version}),
-  python3,
-  python3-numpy
-Description: Apache Arrow is a data processing library for analysis
- .
- This package provides library files for Python.
 
 Package: libarrow-dev
 Section: libdevel
