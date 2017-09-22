@@ -239,6 +239,7 @@ VERSION=#{@version}
       task :update do
         update_debian_changelog
         update_spec
+        update_descriptor
       end
     end
   end
@@ -296,6 +297,16 @@ VERSION=#{@version}
       CHANGELOG
       content = content.sub(/^(Release:\s+)\d+/, "\\11")
       content.rstrip
+    end
+  end
+
+  def update_descriptor
+    Dir.glob("**/descriptor.json") do |descriptor_json|
+      update_content(descriptor_json) do |content|
+        content = content.sub(/"name": "\d+\.\d+\.\d+.*?"/) do
+          "\"name\": \"#{@version}\""
+        end
+      end
     end
   end
 end
