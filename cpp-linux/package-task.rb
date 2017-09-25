@@ -179,7 +179,6 @@ VERSION=#{@version}
 
   def define_apt_task
     namespace :apt do
-      debian_dir = "debian"
       apt_dir = "apt"
       repositories_dir = "#{apt_dir}/repositories"
 
@@ -191,7 +190,9 @@ VERSION=#{@version}
         rm_rf(tmp_dir)
         mkdir_p(tmp_dir)
         cp(@archive_name, tmp_dir)
-        cp_r(debian_dir, "#{tmp_dir}/debian")
+        Dir.glob("debian*") do |debian_dir|
+          cp_r(debian_dir, "#{tmp_dir}/#{debian_dir}")
+        end
 
         env_sh = "#{apt_dir}/env.sh"
         File.open(env_sh, "w") do |file|
@@ -207,8 +208,9 @@ VERSION=#{@version}
           if targets.empty?
             targets = [
               "debian-stretch",
-              "ubuntu-16.04",
-              "ubuntu-17.04",
+              "ubuntu-trusty",
+              "ubuntu-xenial",
+              "ubuntu-zesty",
             ]
           end
           targets.each do |target|
@@ -273,8 +275,9 @@ VERSION=#{@version}
   end
 
   def update_debian_changelog
-    update_content("debian/changelog") do |content|
-      <<-CHANGELOG.rstrip
+    Dir.glob("debian*") do |debian_dir|
+      update_content("#{debian_dir}/changelog") do |content|
+        <<-CHANGELOG.rstrip
 #{@package} (#{package_version}) unstable; urgency=low
 
   * New upstream release.
@@ -282,7 +285,8 @@ VERSION=#{@version}
  -- #{packager_name} <#{packager_email}>  #{@release_time.rfc2822}
 
 #{content}
-      CHANGELOG
+        CHANGELOG
+      end
     end
   end
 
