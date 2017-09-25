@@ -32,7 +32,6 @@ run()
 . /host/env.sh
 
 distribution=$(lsb_release --id --short | tr 'A-Z' 'a-z')
-release=$(lsb_release --release --short)
 code_name=$(lsb_release --codename --short)
 case "${distribution}" in
   debian)
@@ -42,6 +41,7 @@ case "${distribution}" in
     component=universe
     ;;
 esac
+specific_debian_dir="debian.${distribution}-${code_name}"
 
 run mkdir -p build
 run cp /host/tmp/${PACKAGE}-${VERSION}.tar.gz \
@@ -49,10 +49,10 @@ run cp /host/tmp/${PACKAGE}-${VERSION}.tar.gz \
 run cd build
 run tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 run cd ${PACKAGE}-${VERSION}/
-if [ "$distribution" = "ubuntu" ] && [ "$release" = "14.04" ]; then
-  run cp -rp /host/tmp/debian.ubuntu-14.04 debian
+if [ -d "/host/tmp/${specific_debian_dir}" ]; then
+  run cp -rp "/host/tmp/${specific_debian_dir}" debian
 else
-  run cp -rp /host/tmp/debian debian
+  run cp -rp "/host/tmp/debian" debian
 fi
 # export DEB_BUILD_OPTIONS=noopt
 if [ "${DEBUG:-no}" = "yes" ]; then

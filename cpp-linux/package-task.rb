@@ -190,8 +190,9 @@ VERSION=#{@version}
         rm_rf(tmp_dir)
         mkdir_p(tmp_dir)
         cp(@archive_name, tmp_dir)
-        cp_r("debian", "#{tmp_dir}/debian")
-        cp_r("debian.ubuntu-14.04", "#{tmp_dir}/debian.ubuntu-14.04")
+        Dir.glob("debian*") do |debian_dir|
+          cp_r(debian_dir, "#{tmp_dir}/#{debian_dir}")
+        end
 
         env_sh = "#{apt_dir}/env.sh"
         File.open(env_sh, "w") do |file|
@@ -207,9 +208,9 @@ VERSION=#{@version}
           if targets.empty?
             targets = [
               "debian-stretch",
-              "ubuntu-14.04",
-              "ubuntu-16.04",
-              "ubuntu-17.04",
+              "ubuntu-trusty",
+              "ubuntu-xenial",
+              "ubuntu-zesty",
             ]
           end
           targets.each do |target|
@@ -273,12 +274,8 @@ VERSION=#{@version}
   end
 
   def update_debian_changelog
-    variants = [
-      "debian",
-      "debian.ubuntu-14.04",
-    ]
-    variants.each do |variant|
-      update_content("#{variant}/changelog") do |content|
+    Dir.glob("debian*") do |debian_dir|
+      update_content("#{debian_dir}/changelog") do |content|
         <<-CHANGELOG.rstrip
 #{@package} (#{package_version}) unstable; urgency=low
 
