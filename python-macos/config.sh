@@ -66,7 +66,6 @@ function build_wheel {
     cmake -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX=$PARQUET_HOME \
           -DPARQUET_BUILD_TESTS=OFF \
-          -DPARQUET_ARROW=ON \
           -DPARQUET_BOOST_USE_SHARED=OFF \
           ..
     make -j5
