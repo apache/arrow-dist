@@ -22,8 +22,7 @@
 ## Requirements
 
   * Ruby
-  * Vagrant
-  * VirtualBox
+  * Docker
   * Tools to build tar.gz for Apache Arrow C++ and GLib
 
 ## How to build .deb packages
