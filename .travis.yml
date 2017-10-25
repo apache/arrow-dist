@@ -54,7 +54,7 @@ matrix:
     before_install:
     install:
     script:
-    - (cd cpp-linux && rake apt:build DEBUG=no)
+    - (cd cpp-linux && travis_wait 40 rake apt:build PARALLEL=yes DEBUG=no)
     deploy:
       provider: bintray
       file: cpp-linux/apt/descriptor.json
