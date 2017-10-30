@@ -21,6 +21,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ARG DEBUG
 
+RUN sed -i'' -e 's/main$/main contrib non-free/g' /etc/apt/sources.list
+
 RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "-qq") && \
   apt update ${quiet} && \
@@ -37,6 +39,7 @@ RUN \
     libglib2.0-doc \
     libjemalloc-dev \
     lsb-release \
+    nvidia-cuda-toolkit \
     pkg-config \
     python3-dev \
     python3-numpy && \

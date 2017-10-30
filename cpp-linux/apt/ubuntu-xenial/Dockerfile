@@ -37,6 +37,7 @@ RUN \
     libglib2.0-doc \
     libjemalloc-dev \
     lsb-release \
+    nvidia-cuda-toolkit \
     pkg-config \
     python3-dev \
     python3-numpy && \
