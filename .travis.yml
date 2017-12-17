@@ -1,7 +1,7 @@
 env:
   global:
   - PLAT=x86_64
-  - BUILD_REF=apache-arrow-0.7.1
+  - BUILD_REF=apache-arrow-0.8.0
 language: python
 python: 3.5
 sudo: required
