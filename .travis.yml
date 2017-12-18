@@ -108,6 +108,8 @@ before_install:
 - unset -f cd
 - cd ..
 install:
+- unset -f pushd
+- unset -f popd
 - clean_code arrow $BUILD_REF
 - build_wheel arrow $PLAT
 - mv arrow/python/dist/* dist/
