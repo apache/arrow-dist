@@ -105,7 +105,8 @@ before_install:
 - source multibuild/common_utils.sh
 - source multibuild/travis_steps.sh
 - before_install
-- popd
+- unset -f cd
+- cd ..
 install:
 - clean_code arrow $BUILD_REF
 - build_wheel arrow $PLAT
