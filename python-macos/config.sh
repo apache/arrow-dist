@@ -88,7 +88,7 @@ function build_wheel {
     ls -l dist/
     popd
 
-    pip install delocate==0.6.4
+    pip install delocate==0.7.3
     delocate-wheel -L . -v python/dist/*.whl
     popd
 }

@@ -1,13 +1,11 @@
 env:
   global:
   - PLAT=x86_64
-  - BUILD_REF=apache-arrow-0.7.1
+  - BUILD_REF=apache-arrow-0.8.0
 language: python
 python: 3.5
 sudo: required
 dist: trusty
-services:
-- docker
 matrix:
   exclude:
   - python: 3.5
@@ -35,6 +33,8 @@ matrix:
     - PANDAS_DEP="0.20.3"
   - language: cpp
     os: linux
+    services:
+    - docker
     before_script:
     - docker pull quay.io/xhochy/arrow_manylinux1_x86_64_base:latest
     before_install:
@@ -94,7 +94,8 @@ matrix:
       key:
         secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
 before_install:
-- brew uninstall boost
+# Also remove artefacts that depend on Boost
+- brew uninstall boost cgal postgis sfcgal
 - brew update
 - brew upgrade cmake
 - BUILD_DEPENDS="numpy==$NP_BUILD_DEP six cython"
@@ -104,8 +105,11 @@ before_install:
 - source multibuild/common_utils.sh
 - source multibuild/travis_steps.sh
 - before_install
-- popd
+- unset -f cd
+- cd ..
 install:
+- unset -f pushd
+- unset -f popd
 - clean_code arrow $BUILD_REF
 - build_wheel arrow $PLAT
 - mv arrow/python/dist/* dist/

@@ -31,9 +31,9 @@ environment:
   MSVC_DEFAULT_OPTIONS: ON
   BOOST_ROOT: C:\Libraries\boost_1_63_0
   BOOST_LIBRARYDIR: C:\Libraries\boost_1_63_0\lib64-msvc-14.0
-  pyarrow_version: 0.7.1
-  pyarrow_commit: 0e21f84c2fc26dba949a03ee7d7ebfade0a65b81
-  parquet_commit: b69669a230e59e36a193b679fc2c5b4d9150f8c9
+  pyarrow_version: 0.8.0
+  pyarrow_commit: 1d689e5a3e417d3a4b3de16fea7a6fe195c8f8df
+  parquet_commit: e2814ccb224a01289ad3a736ce89a956cb7d52fb
 
 init:
   - set MINICONDA=C:\Miniconda35-x64
