@@ -20,7 +20,7 @@ FROM centos:6
 ARG DEBUG
 
 ENV \
-  SRPM_DOWNLOAD_URL=http://vault.centos.org/7.3.1611/os/Source/SPackages \
+  SRPM_DOWNLOAD_URL=http://vault.centos.org/7.4.1708/os/Source/SPackages \
   LIBARCHIVE_SRPM_BASE=libarchive-3.1.2-10.el7_2.src.rpm
 
 RUN \
@@ -37,7 +37,7 @@ RUN \
   wget ${quiet} ${SRPM_DOWNLOAD_URL}/${LIBARCHIVE_SRPM_BASE} && \
   yum-builddep -y ${quiet} --nogpgcheck ${LIBARCHIVE_SRPM_BASE} && \
   rpm -i ${quiet} ${LIBARCHIVE_SRPM_BASE} && \
-  sed -i'' -e 's/^run_autotests$/:/g' ~/rpmbuild/SPECS/libarchive.spec && \
+  sed -i'' -e 's/^run_testsuite$/:/g' ~/rpmbuild/SPECS/libarchive.spec && \
   AUTOM4TE=autom4te268 \
     rpmbuild -bb ${quiet} \
     ~/rpmbuild/SPECS/libarchive.spec && \

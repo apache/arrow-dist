@@ -9,7 +9,11 @@ export DH_OPTIONS
 BUILD_TYPE=release
 
 %:
-	dh $@ --with gir
+	dh $@ --with gir,autoreconf
+
+override_dh_autoreconf:
+	dh_autoreconf \
+	  --sourcedirectory=c_glib
 
 override_dh_auto_configure:
 	dh_auto_configure \

@@ -1,0 +1,130 @@
+From 72e660a7c90f1846eac473c21fb718a2e23c476e Mon Sep 17 00:00:00 2001
+From: Kouhei Sutou <kou@clear-code.com>
+Date: Mon, 18 Dec 2017 16:52:22 +0100
+Subject: [PATCH] ARROW-1933: [GLib] Fix build error with
+ --with-arrow-cpp-build-dir
+
+The option is used in building deb package.
+
+`arrow/gpu/cuda_version.h` exists in build directory not source directory.
+
+Author: Kouhei Sutou <kou@clear-code.com>
+
+Closes #1429 from kou/glib-fix-build-error-with-arrow-cpp-build-dir and squashes the following commits:
+
+879d6bc [Kouhei Sutou] [GLib] Fix build error with --with-arrow-cpp-build-dir
+---
+ c_glib/arrow-glib/Makefile.am     |  4 ++++
+ c_glib/arrow-gpu-glib/Makefile.am | 13 ++++++++++++-
+ c_glib/configure.ac               | 18 +++++++++++++++---
+ c_glib/example/Makefile.am        |  4 ++++
+ 4 files changed, 35 insertions(+), 4 deletions(-)
+
+diff --git a/c_glib/arrow-glib/Makefile.am b/c_glib/arrow-glib/Makefile.am
+index 39222a54..16d07031 100644
+--- a/c_glib/arrow-glib/Makefile.am
++++ b/c_glib/arrow-glib/Makefile.am
+@@ -212,6 +212,10 @@ if HAVE_INTROSPECTION
+ INTROSPECTION_GIRS =
+ INTROSPECTION_SCANNER_ARGS =
+ INTROSPECTION_SCANNER_ENV =
++if USE_ARROW_BUILD_DIR
++INTROSPECTION_SCANNER_ENV +=			\
++	LD_LIBRARY_PATH=$(ARROW_LIB_DIR):$${PKG_CONFIG_PATH}
++endif
+ if OS_MACOS
+ INTROSPECTION_SCANNER_ENV +=			\
+ 	ARCHFLAGS=
+diff --git a/c_glib/arrow-gpu-glib/Makefile.am b/c_glib/arrow-gpu-glib/Makefile.am
+index 11ffa5ec..1e1c02ac 100644
+--- a/c_glib/arrow-gpu-glib/Makefile.am
++++ b/c_glib/arrow-gpu-glib/Makefile.am
+@@ -70,8 +70,14 @@ if HAVE_INTROSPECTION
+ -include $(INTROSPECTION_MAKEFILE)
+ INTROSPECTION_GIRS =
+ INTROSPECTION_SCANNER_ARGS =
+-INTROSPECTION_SCANNER_ENV =			\
++INTROSPECTION_SCANNER_ENV =
++if USE_ARROW_BUILD_DIR
++INTROSPECTION_SCANNER_ENV +=			\
++	PKG_CONFIG_PATH=${abs_builddir}/../arrow-glib:$(ARROW_BUILD_DIR)/src/arrow:$${PKG_CONFIG_PATH}
++else
++INTROSPECTION_SCANNER_ENV +=			\
+ 	PKG_CONFIG_PATH=${abs_builddir}/../arrow-glib:$${PKG_CONFIG_PATH}
++endif
+ if OS_MACOS
+ INTROSPECTION_SCANNER_ENV +=			\
+ 	ARCHFLAGS=
+@@ -88,6 +94,11 @@ ArrowGPU_1_0_gir_INCLUDES =			\
+ 	Arrow-1.0
+ ArrowGPU_1_0_gir_CFLAGS =			\
+ 	$(AM_CPPFLAGS)
++ArrowGPU_1_0_gir_LDFLAGS =
++if USE_ARROW_BUILD_DIR
++ArrowGPU_1_0_gir_LDFLAGS +=			\
++	-L$(ARROW_LIB_DIR)
++endif
+ ArrowGPU_1_0_gir_LIBS =					\
+ 	$(abs_builddir)/../arrow-glib/libarrow-glib.la	\
+ 	libarrow-gpu-glib.la
+diff --git a/c_glib/configure.ac b/c_glib/configure.ac
+index f06a017a..eabe7bad 100644
+--- a/c_glib/configure.ac
++++ b/c_glib/configure.ac
+@@ -89,16 +89,25 @@ AC_ARG_WITH(arrow-cpp-build-dir,
+   [GARROW_ARROW_CPP_BUILD_DIR="$withval"],
+   [GARROW_ARROW_CPP_BUILD_DIR=""])
+ if test "x$GARROW_ARROW_CPP_BUILD_DIR" = "x"; then
++  USE_ARROW_BUILD_DIR=no
++
+   PKG_CHECK_MODULES([ARROW], [arrow arrow-compute])
+   PKG_CHECK_MODULES([ARROW_GPU],
+                     [arrow-gpu],
+                     [HAVE_ARROW_GPU=yes],
+                     [HAVE_ARROW_GPU=no])
+ else
+-  ARROW_INCLUDE_DIR="\$(abs_top_srcdir)/../cpp/src"
+-  ARROW_LIB_DIR="${GARROW_ARROW_CPP_BUILD_DIR}/${GARROW_ARROW_CPP_BUILD_TYPE}"
++  USE_ARROW_BUILD_DIR=yes
+ 
+-  ARROW_CFLAGS="-I${ARROW_INCLUDE_DIR}"
++  ARROW_BUILD_DIR="${GARROW_ARROW_CPP_BUILD_DIR}"
++  AC_SUBST(ARROW_BUILD_DIR)
++
++  ARROW_SOURCE_INCLUDE_DIR="\$(abs_top_srcdir)/../cpp/src"
++  ARROW_BUILD_INCLUDE_DIR="${GARROW_ARROW_CPP_BUILD_DIR}/src"
++  ARROW_LIB_DIR="${GARROW_ARROW_CPP_BUILD_DIR}/${GARROW_ARROW_CPP_BUILD_TYPE}"
++  AC_SUBST(ARROW_LIB_DIR)
++
++  ARROW_CFLAGS="-I${ARROW_BUILD_INCLUDE_DIR} -I${ARROW_SOURCE_INCLUDE_DIR}"
+   ARROW_LIBS="-L${ARROW_LIB_DIR} -larrow"
+   AC_SUBST(ARROW_CFLAGS)
+   AC_SUBST(ARROW_LIBS)
+@@ -115,6 +124,9 @@ else
+   AC_SUBST(ARROW_GPU_LIBS)
+ fi
+ 
++AM_CONDITIONAL([USE_ARROW_BUILD_DIR],
++               [test "$USE_ARROW_BUILD_DIR" = "yes"])
++
+ AM_CONDITIONAL([HAVE_ARROW_GPU], [test "$HAVE_ARROW_GPU" = "yes"])
+ if test "$HAVE_ARROW_GPU" = "yes"; then
+   AC_DEFINE(HAVE_ARROW_GPU, [1], [Define to 1 if Apache Arrow supports GPU.])
+diff --git a/c_glib/example/Makefile.am b/c_glib/example/Makefile.am
+index 3eaf808b..f4aca70c 100644
+--- a/c_glib/example/Makefile.am
++++ b/c_glib/example/Makefile.am
+@@ -33,6 +33,10 @@ AM_CFLAGS =					\
+ AM_LDFLAGS =						\
+ 	$(GLIB_LIBS)					\
+ 	$(builddir)/../arrow-glib/libarrow-glib.la
++if USE_ARROW_BUILD_DIR
++AM_LDFLAGS +=					\
++	$(ARROW_LIBS)
++endif
+ 
+ noinst_PROGRAMS =				\
+ 	build					\
+-- 
+2.15.1
+
