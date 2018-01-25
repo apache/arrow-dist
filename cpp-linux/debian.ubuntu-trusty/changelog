@@ -1,3 +1,10 @@
+apache-arrow (0.8.0-2) unstable; urgency=low
+
+  * Fix .typelib path.
+    Reported by Mike Sam. Thanks!!!
+
+ -- Kouhei Sutou <kou@clear-code.com>  Thu, 25 Jan 2018 21:44:11 +0900
+
 apache-arrow (0.8.0-1) unstable; urgency=low
 
   * New upstream release.
