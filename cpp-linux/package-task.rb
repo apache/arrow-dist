@@ -210,7 +210,6 @@ VERSION=#{@version}
               "debian-stretch",
               "ubuntu-trusty",
               "ubuntu-xenial",
-              "ubuntu-zesty",
               "ubuntu-artful",
             ]
           end
