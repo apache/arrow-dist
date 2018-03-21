@@ -26,7 +26,7 @@ function build_wheel {
     echo LDFLAGS=${LDFLAGS}
     pushd $1
 
-    boost_version="1.65.0"
+    boost_version="1.65.1"
     boost_directory_name="boost_${boost_version//\./_}"
     boost_tarball_name="${boost_directory_name}.tar.gz"
     wget --no-check-certificate \
@@ -34,15 +34,31 @@ function build_wheel {
         -O "${boost_tarball_name}"
     tar xf "${boost_tarball_name}"
 
+    arrow_boost="$PWD/arrow_boost"
+    arrow_boost_dist="$PWD/arrow_boost_dist"
+    mkdir "$arrow_boost" "$arrow_boost_dist"
     pushd "${boost_directory_name}"
-
-    ./bootstrap.sh
 
     # Arrow is 64-bit-only at the moment
     export CFLAGS="-fPIC -arch x86_64 ${CFLAGS//"-arch i386"/}"
-    export CXXFLAGS="-fPIC -arch x86_64 ${CXXFLAGS//"-arch i386"}"
+    export CXXFLAGS="-fPIC -arch x86_64 ${CXXFLAGS//"-arch i386"} -std=c++11"
 
-    ./bjam "cxxflags=${CXXFLAGS}" cflags="${CFLAGS}" --prefix=/usr/local --with-filesystem --with-date_time --with-system --with-regex install
+    ./bootstrap.sh
+    ./b2 tools/bcp
+    ./dist/bin/bcp --namespace=arrow_boost --namespace-alias \
+	filesystem date_time system regex build algorithm locale format "$arrow_boost"
+
+    popd
+    pushd "$arrow_boost"
+    ./bootstrap.sh
+    ./bjam cxxflags="${CXXFLAGS}" \
+	linkflags="-std=c++11" \
+	cflags="${CFLAGS}" \
+	variant=release \
+	link=shared \
+	--prefix="$arrow_boost_dist" \
+	--with-filesystem --with-date_time --with-system --with-regex \
+	install
     popd
 
     export ARROW_HOME=/usr/local
@@ -62,6 +78,8 @@ function build_wheel {
           -DARROW_JEMALLOC_USE_SHARED=OFF \
           -DARROW_PYTHON=ON \
           -DARROW_ORC=ON \
+	  -DBOOST_ROOT="$arrow_boost_dist" \
+	  -DBoost_NAMESPACE=arrow_boost \
           -DMAKE=make \
           ..
     make -j5
@@ -77,6 +95,8 @@ function build_wheel {
           -DCMAKE_INSTALL_PREFIX=$PARQUET_HOME \
           -DPARQUET_BUILD_TESTS=OFF \
           -DPARQUET_BOOST_USE_SHARED=ON \
+	  -DBoost_NAMESPACE=arrow_boost \
+	  -DBOOST_ROOT="$arrow_boost_dist" \
           ..
     make -j5
     make install
@@ -92,6 +112,7 @@ function build_wheel {
     export PYARROW_BUNDLE_BOOST=1
     export PYARROW_BUNDLE_ARROW_CPP=1
     export PYARROW_BUILD_TYPE='release'
+    export PYARROW_CMAKE_OPTIONS="-DBOOST_ROOT=$arrow_boost_dist"
     pushd python
     python setup.py build_ext \
            --with-plasma --with-orc --with-parquet \
