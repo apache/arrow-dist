@@ -89,8 +89,7 @@ set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
 python setup.py build_ext --with-parquet ^
-    --bundle-arrow-cpp --bundle-boost ^
-    --boost-namespace=arrow_boost bdist_wheel || exit /B
+    --bundle-arrow-cpp --bundle-boost bdist_wheel || exit /B
 popd
 
 @rem test the wheel
