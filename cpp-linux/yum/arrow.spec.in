@@ -60,13 +60,16 @@ mkdir cpp/build
 cd cpp/build
 %cmake3 .. \
   -DCMAKE_BUILD_TYPE=$build_type \
+  -DARROW_ORC=ON \
 %if %{use_python}
-  -DARROW_PYTHON=yes \
+  -DARROW_PYTHON=ON \
 %endif
 %if %{_centos_ver} == 6
-  -DARROW_BOOST_VENDORED=yes \
+  -DARROW_BOOST_VENDORED=ON \
+%else
+  -DARROW_BOOST_USE_SHARED=ON \
 %endif
-  -DARROW_BUILD_TESTS=no
+  -DARROW_BUILD_TESTS=ON
 make %{?_smp_mflags}
 cd -
 
@@ -100,6 +103,7 @@ Group:		System Environment/Libraries
 License:	Apache-2.0
 Requires:	boost-system
 Requires:	boost-filesystem
+Requires:	boost-regex
 Requires:	jemalloc
 
 %description libs
@@ -220,6 +224,9 @@ Documentation for Apache Arrow GLib.
 %endif
 
 %changelog
+* Wed Mar 21 2018 Phillip Cloud <phillip.cloud@twosigma.com> - 0.9.0-1
+- New upstream release.
+
 * Sun Dec 17 2017 Uwe Korn <uwelk@xhochy.com> - 0.8.0-1
 - New upstream release.
 
