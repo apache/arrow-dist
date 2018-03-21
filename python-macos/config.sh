@@ -26,7 +26,7 @@ function build_wheel {
     echo LDFLAGS=${LDFLAGS}
     pushd $1
 
-    boost_version="1.66.0"
+    boost_version="1.65.0"
     boost_directory_name="boost_${boost_version//\./_}"
     boost_tarball_name="${boost_directory_name}.tar.gz"
     wget --no-check-certificate \
