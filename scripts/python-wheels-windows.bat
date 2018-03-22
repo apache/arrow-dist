@@ -88,6 +88,8 @@ popd
 set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
+conda list
+cmake --version
 python setup.py build_ext --with-parquet ^
     --bundle-arrow-cpp --bundle-boost bdist_wheel || exit /B
 popd
