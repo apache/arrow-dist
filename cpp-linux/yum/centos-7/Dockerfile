@@ -31,10 +31,10 @@ RUN \
     gobject-introspection-devel \
     gtk-doc \
     jemalloc-devel \
-    numpy \
     pkg-config \
-    python \
-    python-devel \
+    python34 \
+    python34-devel \
+    python34-numpy \
     rpm-build \
     rpmdevtools \
     tar && \

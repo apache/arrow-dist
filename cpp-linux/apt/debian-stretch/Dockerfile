@@ -35,6 +35,7 @@ RUN \
     git \
     gtk-doc-tools \
     libboost-filesystem-dev \
+    libboost-regex-dev \
     libboost-system-dev \
     libgirepository1.0-dev \
     libglib2.0-doc \
