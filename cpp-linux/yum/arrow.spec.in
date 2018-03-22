@@ -61,14 +61,15 @@ cd cpp/build
 %cmake3 .. \
   -DCMAKE_BUILD_TYPE=$build_type \
 %if %{use_python}
-  -DARROW_PYTHON=yes \
+  -DARROW_PYTHON=ON \
   -DPythonInterp_FIND_VERSION=ON \
   -DPythonInterp_FIND_VERSION_MAJOR=3 \
 %endif
 %if %{_centos_ver} == 6
-  -DARROW_BOOST_VENDORED=yes \
+  -DARROW_BOOST_VENDORED=ON \
 %endif
-  -DARROW_BUILD_TESTS=no
+  -DARROW_ORC=ON \
+  -DARROW_BUILD_TESTS=OFF
 make %{?_smp_mflags}
 cd -
 
@@ -102,6 +103,7 @@ Group:		System Environment/Libraries
 License:	Apache-2.0
 Requires:	boost-system
 Requires:	boost-filesystem
+Requires:	boost-regex
 Requires:	jemalloc
 
 %description libs
