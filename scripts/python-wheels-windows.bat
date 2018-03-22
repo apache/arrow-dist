@@ -69,7 +69,7 @@ popd
 @rem Build parquet-cpp
 git clone https://github.com/apache/parquet-cpp.git || exit /B
 pushd parquet-cpp
-git checkout "%parquet_tag%"
+git checkout "apache-parquet-cpp-%parquet_version%"
 mkdir build
 popd
 
