@@ -84,12 +84,13 @@ cmake -G "%GENERATOR%" ^
 cmake --build . --target INSTALL --config Release || exit /B
 popd
 
+conda list || exit /B
+cmake --version || exit /B
+
 @rem Build and import pyarrow
 set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
-conda list
-cmake --version
 python setup.py build_ext --with-parquet ^
     --bundle-arrow-cpp --bundle-boost bdist_wheel || exit /B
 popd
