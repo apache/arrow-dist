@@ -84,7 +84,6 @@ cmake -G "%GENERATOR%" ^
 cmake --build . --target INSTALL --config Release || exit /B
 popd
 
-conda list || exit /B
 cmake --version || exit /B
 
 @rem Build and import pyarrow
