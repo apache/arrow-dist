@@ -225,11 +225,7 @@ Documentation for Apache Arrow GLib.
 %endif
 
 %changelog
-<<<<<<< HEAD
 * Fri Mar 16 2018 Kouhei Sutou <kou@clear-code.com> - 0.9.0-1
-=======
-* Wed Mar 21 2018 Phillip Cloud <phillip.cloud@twosigma.com> - 0.9.0-1
->>>>>>> 676eac104f23c7003a88ec51a7b5710093143c12
 - New upstream release.
 
 * Sun Dec 17 2017 Uwe Korn <uwelk@xhochy.com> - 0.8.0-1
