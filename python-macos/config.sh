@@ -21,7 +21,7 @@ set -e
 
 function build_wheel {
     echo `pwd`
-    export PATH="/usr/local/opt/bison/bin:$PATH"
+    export PATH="/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH"
     echo CFLAGS=${CFLAGS}
     echo CXXFLAGS=${CXXFLAGS}
     echo LDFLAGS=${LDFLAGS}
