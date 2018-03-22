@@ -62,7 +62,7 @@ function build_wheel {
         install
     popd
 
-    export THRIFT_HOME=/usr
+    export THRIFT_HOME=/usr/local
     export THRIFT_VERSION=0.11.0
     wget http://archive.apache.org/dist/thrift/${THRIFT_VERSION}/thrift-${THRIFT_VERSION}.tar.gz
     tar xf thrift-${THRIFT_VERSION}.tar.gz
