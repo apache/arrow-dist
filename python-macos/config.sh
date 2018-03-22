@@ -153,7 +153,7 @@ function build_wheel {
     popd
 
     pip install "delocate==0.7.3"
-    ls -l /Users/travis/build/apache/arrow-dist/arrow
+    find . -name '*.dylib'
     delocate-wheel -L . -v python/dist/*.whl
     popd
 }
