@@ -150,6 +150,9 @@ function build_wheel {
            --bundle-arrow-cpp --bundle-boost --boost-namespace=arrow_boost \
            bdist_wheel
     ls -l dist/
+    for wheel in dist/*.whl; do
+	unzip -l "$wheel"
+    done
     popd
 
     pip install "delocate==0.7.3"
