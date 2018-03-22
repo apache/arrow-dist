@@ -82,6 +82,7 @@ function build_wheel {
         "-DWITH_PYTHON=OFF" \
         "-DWITH_CPP=ON" \
         "-DWITH_STATIC_LIB=ON" \
+        "-DWITH_LIBEVENT=OFF" \
         -DBoost_NAMESPACE=arrow_boost \
         -DBOOST_ROOT="$arrow_boost_dist" \
         ..
