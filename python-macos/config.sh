@@ -63,7 +63,7 @@ function build_wheel {
 
     export ARROW_HOME=/usr/local
     export PARQUET_HOME=/usr/local
-    pip install "cython==0.25.2" "numpy==${NP_TEST_DEP}"
+    pip install "cython==0.27.3" "numpy==${NP_TEST_DEP}"
     pushd cpp
     mkdir build
     pushd build
@@ -93,12 +93,13 @@ function build_wheel {
     pushd build
     cmake -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX=$PARQUET_HOME \
+          -DPARQUET_VERBOSE_THIRDPARTY_BUILD=ON \
           -DPARQUET_BUILD_TESTS=OFF \
           -DPARQUET_BOOST_USE_SHARED=ON \
           -DBoost_NAMESPACE=arrow_boost \
           -DBOOST_ROOT="$arrow_boost_dist" \
           ..
-    make -j5
+    make -j5 VERBOSE=1
     make install
     popd
     popd
