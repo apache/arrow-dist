@@ -21,7 +21,7 @@ conda update --yes --quiet conda -c conda-forge
 
 conda create -n arrow -q -y -c conda-forge ^
       python=%PYTHON% ^
-      six pytest setuptools numpy=%NUMPY% pandas cython ^
+      six pytest setuptools numpy=%NUMPY% pandas cython nomkl ^
       git flatbuffers rapidjson ^
       cmake ^
       boost-cpp thrift-cpp ^
@@ -95,7 +95,7 @@ popd
 @rem test the wheel
 call deactivate
 conda create -n wheel-test -q -y -c conda-forge ^
-      python=%PYTHON% numpy=%NUMPY% pandas
+      python=%PYTHON% numpy=%NUMPY% pandas nomkl
 call activate wheel-test
 
 pip install --no-index --find-links=%ARROW_SRC%\python\dist\ pyarrow
