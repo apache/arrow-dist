@@ -62,6 +62,33 @@ function build_wheel {
         install
     popd
 
+    export THRIFT_HOME=/usr
+    export THRIFT_VERSION=0.11.0
+    wget http://archive.apache.org/dist/thrift/${THRIFT_VERSION}/thrift-${THRIFT_VERSION}.tar.gz
+    tar xf thrift-${THRIFT_VERSION}.tar.gz
+    pushd thrift-${THRIFT_VERSION}
+    mkdir build-tmp
+    pushd build-tmp
+    cmake -DCMAKE_BUILD_TYPE=release \
+        "-DCMAKE_CXX_FLAGS=-fPIC" \
+        "-DCMAKE_C_FLAGS=-fPIC" \
+        "-DCMAKE_INSTALL_PREFIX=${THRIFT_HOME}" \
+        "-DCMAKE_INSTALL_RPATH=${THRIFT_HOME}/lib" \
+        "-DBUILD_SHARED_LIBS=OFF" \
+        "-DBUILD_TESTING=OFF" \
+        "-DWITH_QT4=OFF" \
+        "-DWITH_C_GLIB=OFF" \
+        "-DWITH_JAVA=OFF" \
+        "-DWITH_PYTHON=OFF" \
+        "-DWITH_CPP=ON" \
+        "-DWITH_STATIC_LIB=ON" \
+        -DBoost_NAMESPACE=arrow_boost \
+        -DBOOST_ROOT="$arrow_boost_dist" \
+        ..
+    make install -j5
+    popd
+    popd
+
     export ARROW_HOME=/usr/local
     export PARQUET_HOME=/usr/local
     pip install "cython==0.27.3" "numpy==${NP_TEST_DEP}"
