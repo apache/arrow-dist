@@ -17,7 +17,7 @@
 
 @echo on
 
-conda update --yes --quiet conda -c conda-forge
+conda update -y -q conda -c conda-forge || exit /B
 
 conda create -n arrow -q -y -c conda-forge ^
       python=%PYTHON% ^
@@ -25,7 +25,7 @@ conda create -n arrow -q -y -c conda-forge ^
       git flatbuffers rapidjson ^
       cmake ^
       boost-cpp thrift-cpp ^
-      gflags snappy zlib brotli zstd lz4-c
+      gflags snappy zlib brotli zstd lz4-c || exit /B
 
 call activate arrow
 
@@ -95,7 +95,7 @@ popd
 @rem test the wheel
 call deactivate
 conda create -n wheel-test -q -y -c conda-forge ^
-      python=%PYTHON% numpy=%NUMPY% pandas
+      python=%PYTHON% numpy=%NUMPY% pandas || exit /B
 call activate wheel-test
 
 pip install --no-index --find-links=%ARROW_SRC%\python\dist\ pyarrow
