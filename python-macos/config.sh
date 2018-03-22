@@ -45,9 +45,10 @@ function build_wheel {
     export CXXFLAGS="-fPIC -arch x86_64 ${CXXFLAGS//"-arch i386"} -std=c++11"
 
     ./bootstrap.sh
-    ./b2 tools/bcp
+    ./b2 tools/bcp > /dev/null 2>&1
     ./dist/bin/bcp --namespace=arrow_boost --namespace-alias \
-        filesystem date_time system regex build algorithm locale format "$arrow_boost"
+        filesystem date_time system regex build algorithm locale format \
+	"$arrow_boost" > /dev/null 2>&1
 
     popd
     pushd "$arrow_boost"
@@ -59,7 +60,7 @@ function build_wheel {
         link=shared \
         --prefix="$arrow_boost_dist" \
         --with-filesystem --with-date_time --with-system --with-regex \
-        install
+        install > /dev/null 2>&1
     popd
 
     export THRIFT_HOME=/usr/local
