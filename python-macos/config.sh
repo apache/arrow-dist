@@ -26,19 +26,44 @@ function build_wheel {
     echo LDFLAGS=${LDFLAGS}
     pushd $1
 
-	wget --no-check-certificate http://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.gz -O boost_1_60_0.tar.gz
-	tar xf boost_1_60_0.tar.gz
-    pushd boost_1_60_0
+    boost_version="1.65.1"
+    boost_directory_name="boost_${boost_version//\./_}"
+    boost_tarball_name="${boost_directory_name}.tar.gz"
+    wget --no-check-certificate \
+        http://downloads.sourceforge.net/project/boost/boost/"${boost_version}"/"${boost_tarball_name}" \
+        -O "${boost_tarball_name}"
+    tar xf "${boost_tarball_name}"
+
+    arrow_boost="$PWD/arrow_boost"
+    arrow_boost_dist="$PWD/arrow_boost_dist"
+    mkdir "$arrow_boost" "$arrow_boost_dist"
+    pushd "${boost_directory_name}"
+
+    # Arrow is 64-bit-only at the moment
+    export CFLAGS="-fPIC -arch x86_64 ${CFLAGS//"-arch i386"/}"
+    export CXXFLAGS="-fPIC -arch x86_64 ${CXXFLAGS//"-arch i386"} -std=c++11"
+
     ./bootstrap.sh
-    ./bjam "cxxflags=-fPIC ${CFLAGS}" cflags="-fPIC ${CXXFLAGS}" --prefix=/usr/local --with-filesystem --with-date_time --with-system --with-regex install
+    ./b2 tools/bcp
+    ./dist/bin/bcp --namespace=arrow_boost --namespace-alias \
+        filesystem date_time system regex build algorithm locale format "$arrow_boost"
+
+    popd
+    pushd "$arrow_boost"
+    ./bootstrap.sh
+    ./bjam cxxflags="${CXXFLAGS}" \
+        linkflags="-std=c++11" \
+        cflags="${CFLAGS}" \
+        variant=release \
+        link=shared \
+        --prefix="$arrow_boost_dist" \
+        --with-filesystem --with-date_time --with-system --with-regex \
+        install
     popd
 
-    # Arrow is 64bit-only at the moment
-    export CFLAGS="-arch x86_64"
-    export CXXFLAGS="-arch x86_64"
-    export ARROW_HOME=/usr/local/
-    export PARQUET_HOME=/usr/local/
-    pip install cython==0.25.2 numpy==${NP_TEST_DEP}
+    export ARROW_HOME=/usr/local
+    export PARQUET_HOME=/usr/local
+    pip install "cython==0.25.2" "numpy==${NP_TEST_DEP}"
     pushd cpp
     mkdir build
     pushd build
@@ -46,12 +71,15 @@ function build_wheel {
           -DCMAKE_INSTALL_PREFIX=$ARROW_HOME \
           -DARROW_BUILD_TESTS=OFF \
           -DARROW_BUILD_SHARED=ON \
-          -DARROW_BOOST_USE_SHARED=OFF \
+          -DARROW_BOOST_USE_SHARED=ON \
           -DARROW_JEMALLOC=OFF \
           -DARROW_PLASMA=ON \
           -DARROW_RPATH_ORIGIN=ON \
           -DARROW_JEMALLOC_USE_SHARED=OFF \
           -DARROW_PYTHON=ON \
+          -DARROW_ORC=ON \
+          -DBOOST_ROOT="$arrow_boost_dist" \
+          -DBoost_NAMESPACE=arrow_boost \
           -DMAKE=make \
           ..
     make -j5
@@ -66,7 +94,9 @@ function build_wheel {
     cmake -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX=$PARQUET_HOME \
           -DPARQUET_BUILD_TESTS=OFF \
-          -DPARQUET_BOOST_USE_SHARED=OFF \
+          -DPARQUET_BOOST_USE_SHARED=ON \
+          -DBoost_NAMESPACE=arrow_boost \
+          -DBOOST_ROOT="$arrow_boost_dist" \
           ..
     make -j5
     make install
@@ -76,19 +106,22 @@ function build_wheel {
     unset ARROW_HOME
     unset PARQUET_HOME
     export PYARROW_WITH_PARQUET=1
+    export PYARROW_WITH_ORC=1
     export PYARROW_WITH_JEMALLOC=1
     export PYARROW_WITH_PLASMA=1
+    export PYARROW_BUNDLE_BOOST=1
     export PYARROW_BUNDLE_ARROW_CPP=1
     export PYARROW_BUILD_TYPE='release'
+    export PYARROW_CMAKE_OPTIONS="-DBOOST_ROOT=$arrow_boost_dist"
     pushd python
-    echo "python setup.py build_ext --inplace --with-parquet --with-plasma --bundle-arrow-cpp"
-    python setup.py build_ext --inplace \
-           --with-plasma --with-parquet --bundle-arrow-cpp
-    python setup.py bdist_wheel
+    python setup.py build_ext \
+           --with-plasma --with-orc --with-parquet \
+           --bundle-arrow-cpp --bundle-boost --boost-namespace=arrow_boost \
+           bdist_wheel
     ls -l dist/
     popd
 
-    pip install delocate==0.7.3
+    pip install "delocate==0.7.3"
     delocate-wheel -L . -v python/dist/*.whl
     popd
 }

@@ -81,7 +81,8 @@ class ApacheArrowPackageTask < PackageTask
         cd(cpp_build_dir) do
           sh("cmake", cpp_dir,
              "-DCMAKE_BUILD_TYPE=#{build_type}",
-             "-DARROW_BUILD_TESTS=no")
+             "-DARROW_BOOST_USE_SHARED=ON",
+             "-DARROW_BUILD_TESTS=OFF")
           sh("make", "-j8")
         end
         cd("c_glib") do
