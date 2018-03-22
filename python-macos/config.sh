@@ -93,7 +93,7 @@ function build_wheel {
 
     export ARROW_HOME=/usr/local
     export PARQUET_HOME=/usr/local
-    pip install "cython==0.27.3" "numpy==${NP_TEST_DEP}"
+    pip install "cython==0.27.3" "numpy==${NP_TEST_DEP}" certifi
     pushd cpp
     mkdir build
     pushd build
