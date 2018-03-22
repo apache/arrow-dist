@@ -25,6 +25,7 @@ override_dh_auto_configure:
 	  -DARROW_PYTHON=ON \
 	  -DPythonInterp_FIND_VERSION=ON \
 	  -DPythonInterp_FIND_VERSION_MAJOR=3 \
+	  -DARROW_ORC=ON \
 	  -DARROW_GPU=ON
 	dh_auto_configure \
 	  --sourcedirectory=c_glib \
