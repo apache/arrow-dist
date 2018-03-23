@@ -89,6 +89,8 @@ cmake --version || exit /B
 @rem Build and import pyarrow
 set PYTHONPATH=
 
+set PYARROW_BUNDLE_BOOST=0
+
 pushd %ARROW_SRC%\python
 python setup.py build_ext --with-parquet ^
     --bundle-arrow-cpp bdist_wheel || exit /B
