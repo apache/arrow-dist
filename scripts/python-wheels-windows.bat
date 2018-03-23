@@ -40,7 +40,7 @@ pushd %ARROW_SRC%
 @rem fix up symlinks
 git config core.symlinks true
 git reset --hard || exit /B
-git checkout "apache-arrow-%pyarrow_version%" || exit /B
+git checkout "%pyarrow_ref%" || exit /B
 
 popd
 
@@ -71,7 +71,7 @@ popd
 @rem Build parquet-cpp
 git clone https://github.com/apache/parquet-cpp.git || exit /B
 pushd parquet-cpp
-git checkout "apache-parquet-cpp-%parquet_tag%"
+git checkout "%parquet_cpp_ref%"
 popd
 
 mkdir parquet-cpp\build
