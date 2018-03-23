@@ -22,7 +22,7 @@ conda update --yes --quiet conda
 conda create -n arrow -q -y python=%PYTHON% ^
       six pytest setuptools numpy=%NUMPY% pandas cython
 
-set ARROW_CMAKE_VERSION=3.10.2
+set ARROW_CMAKE_VERSION=3.8.0
 
 conda install -n arrow -q -y -c conda-forge ^
       git flatbuffers rapidjson ^
@@ -90,7 +90,8 @@ set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
 set PYARROW_BUNDLE_BOOST=0
-python setup.py build_ext --with-parquet bdist_wheel  || exit /B
+set PYARROW_BUILD_TYPE=Release
+python setup.py build_ext --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
 popd
 
 @rem test the wheel
