@@ -20,6 +20,8 @@
 set -e
 
 function build_wheel {
+    pip install -U pip
+    pip install setuptools_scm
     echo `pwd`
     export PATH="/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH"
     echo CFLAGS=${CFLAGS}
@@ -93,7 +95,7 @@ function build_wheel {
 
     export ARROW_HOME=/usr/local
     export PARQUET_HOME=/usr/local
-    pip install "cython==0.27.3" "numpy==${NP_TEST_DEP}" certifi
+    pip install "cython==0.27.3" "numpy==${NP_TEST_DEP}"
     pushd cpp
     mkdir build
     pushd build
