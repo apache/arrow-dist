@@ -156,9 +156,5 @@ function build_wheel {
 	unzip -l "$wheel"
     done
     popd
-
-    pip install "delocate==0.7.3"
-    find . -name '*.dylib'
-    delocate-wheel -L . -v python/dist/*.whl
     popd
 }
