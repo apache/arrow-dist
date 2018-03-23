@@ -113,7 +113,7 @@ install:
 - unset -f popd
 - clean_code arrow $BUILD_REF
 - build_wheel arrow $PLAT
-- mv arrow/python/dist/* dist/
+- mv -v arrow/python/dist/* dist/
 script:
 - echo "SCRIPT"
 - pwd
