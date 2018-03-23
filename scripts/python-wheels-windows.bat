@@ -89,6 +89,7 @@ popd
 set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
+set PYARROW_BUNDLE_BOOST=0
 python setup.py build_ext --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
 popd
 
