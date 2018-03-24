@@ -146,6 +146,7 @@ function build_wheel {
     export PYARROW_BUNDLE_ARROW_CPP=1
     export PYARROW_BUILD_TYPE='release'
     export PYARROW_CMAKE_OPTIONS="-DBOOST_ROOT=$arrow_boost_dist"
+    export SETUPTOOLS_SCM_PRETEND_VERSION=$PYARROW_VERSION
     pushd python
     python setup.py build_ext \
            --with-plasma --with-orc --with-parquet \

@@ -22,11 +22,9 @@ conda update --yes --quiet conda
 conda create -n arrow -q -y python=%PYTHON% ^
       six pytest setuptools numpy=%NUMPY% pandas cython
 
-set ARROW_CMAKE_VERSION=3.8.0
-
 conda install -n arrow -q -y -c conda-forge ^
       git flatbuffers rapidjson ^
-      cmake=%ARROW_CMAKE_VERSION% ^
+      cmake ^
       boost-cpp thrift-cpp ^
       gflags snappy zlib brotli zstd lz4-c
 
@@ -55,7 +53,7 @@ pushd %ARROW_SRC%\cpp\build
 
 cmake -G "%GENERATOR%" ^
       -DCMAKE_INSTALL_PREFIX=%ARROW_HOME% ^
-      -DARROW_BOOST_USE_SHARED=ON ^
+      -DARROW_BOOST_USE_SHARED=OFF ^
       -DARROW_BUILD_TESTS=OFF ^
       -DCMAKE_BUILD_TYPE=Release ^
       -DARROW_CXXFLAGS="/MP" ^
@@ -80,7 +78,7 @@ pushd parquet-cpp\build
 cmake -G "%GENERATOR%" ^
      -DCMAKE_INSTALL_PREFIX=%PARQUET_HOME% ^
      -DCMAKE_BUILD_TYPE=Release ^
-     -DPARQUET_BOOST_USE_SHARED=ON ^
+     -DPARQUET_BOOST_USE_SHARED=OFF ^
      -DPARQUET_BUILD_TESTS=OFF .. || exit /B
 cmake --build . --target INSTALL --config Release || exit /B
 popd
@@ -89,9 +87,14 @@ popd
 set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
-set PYARROW_BUNDLE_BOOST=0
 set PYARROW_BUILD_TYPE=Release
-python setup.py build_ext --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
+set SETUPTOOLS_SCM_PRETEND_VERSION=%pyarrow_version%
+
+python setup.py build_ext ^
+       --with-parquet ^
+       --with-static-boost ^
+       --bundle-arrow-cpp ^
+       bdist_wheel  || exit /B
 popd
 
 @rem test the wheel
