@@ -22,11 +22,9 @@ conda update --yes --quiet conda
 conda create -n arrow -q -y python=%PYTHON% ^
       six pytest setuptools numpy=%NUMPY% pandas cython
 
-set ARROW_CMAKE_VERSION=3.8.0
-
 conda install -n arrow -q -y -c conda-forge ^
       git flatbuffers rapidjson ^
-      cmake=%ARROW_CMAKE_VERSION% ^
+      cmake ^
       boost-cpp thrift-cpp ^
       gflags snappy zlib brotli zstd lz4-c
 
@@ -40,7 +38,7 @@ pushd %ARROW_SRC%
 @rem fix up symlinks
 git config core.symlinks true
 git reset --hard || exit /B
-git checkout %pyarrow_commit% || exit /B
+git checkout "%pyarrow_ref%" || exit /B
 
 popd
 
@@ -54,7 +52,7 @@ mkdir %ARROW_SRC%\cpp\build
 pushd %ARROW_SRC%\cpp\build
 
 cmake -G "%GENERATOR%" ^
-      -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%\Library ^
+      -DCMAKE_INSTALL_PREFIX=%ARROW_HOME% ^
       -DARROW_BOOST_USE_SHARED=OFF ^
       -DARROW_BUILD_TESTS=OFF ^
       -DCMAKE_BUILD_TYPE=Release ^
@@ -71,7 +69,7 @@ popd
 @rem Build parquet-cpp
 git clone https://github.com/apache/parquet-cpp.git || exit /B
 pushd parquet-cpp
-git checkout %parquet_commit%
+git checkout "%parquet_cpp_ref%"
 popd
 
 mkdir parquet-cpp\build
@@ -80,8 +78,8 @@ pushd parquet-cpp\build
 cmake -G "%GENERATOR%" ^
      -DCMAKE_INSTALL_PREFIX=%PARQUET_HOME% ^
      -DCMAKE_BUILD_TYPE=Release ^
-     -DPARQUET_BOOST_USE_SHARED=off ^
-     -DPARQUET_BUILD_TESTS=off .. || exit /B
+     -DPARQUET_BOOST_USE_SHARED=OFF ^
+     -DPARQUET_BUILD_TESTS=OFF .. || exit /B
 cmake --build . --target INSTALL --config Release || exit /B
 popd
 
@@ -89,7 +87,14 @@ popd
 set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
-python setup.py build_ext --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
+set PYARROW_BUILD_TYPE=Release
+set SETUPTOOLS_SCM_PRETEND_VERSION=%pyarrow_version%
+
+python setup.py build_ext ^
+       --with-parquet ^
+       --with-static-boost ^
+       --bundle-arrow-cpp ^
+       bdist_wheel  || exit /B
 popd
 
 @rem test the wheel
