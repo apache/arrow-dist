@@ -126,6 +126,7 @@ deploy:
   provider: bintray
   file: descriptor.json
   user: wesm
+  skip_cleanup: true
   on:
     all_branches: true
   key:
