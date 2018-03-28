@@ -65,6 +65,12 @@ function build_wheel {
         install > /dev/null 2>&1
     popd
 
+    pushd "${arrow_boost_dist}"
+      for dylib in *.dylib; do
+        install_name_tool -id @loader_path/${dylib} ${dylib}
+      done
+    popd
+
     export THRIFT_HOME=/usr/local
     export THRIFT_VERSION=0.11.0
     wget http://archive.apache.org/dist/thrift/${THRIFT_VERSION}/thrift-${THRIFT_VERSION}.tar.gz
@@ -154,8 +160,14 @@ function build_wheel {
            bdist_wheel
     ls -l dist/
     for wheel in dist/*.whl; do
-	unzip -l "$wheel"
+      pip install "$wheel"
+      unzip -l "$wheel"
     done
+    mkdir -p tmp
+    pushd tmp
+    python -c "import pyarrow"
+    python -c "import pyarrow.parquet"
+    popd
     popd
     popd
 }
