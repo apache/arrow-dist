@@ -11,20 +11,20 @@ matrix:
   exclude:
   - python: 3.5
   include:
-  - os: osx
-    language: objective-c
-    env:
-    - MB_PYTHON_VERSION=2.7
-    - NP_BUILD_DEP=1.10.1
-    - NP_TEST_DEP=1.10.1
-    - PANDAS_DEP="0.20.3"
-  - os: osx
-    language: objective-c
-    env:
-    - MB_PYTHON_VERSION=3.5
-    - NP_BUILD_DEP="1.10.1"
-    - NP_TEST_DEP="1.10.1"
-    - PANDAS_DEP="0.20.3"
+#  - os: osx
+#    language: objective-c
+#    env:
+#    - MB_PYTHON_VERSION=2.7
+#    - NP_BUILD_DEP=1.10.1
+#    - NP_TEST_DEP=1.10.1
+#    - PANDAS_DEP="0.20.3"
+#  - os: osx
+#    language: objective-c
+#    env:
+#    - MB_PYTHON_VERSION=3.5
+#    - NP_BUILD_DEP="1.10.1"
+#    - NP_TEST_DEP="1.10.1"
+#    - PANDAS_DEP="0.20.3"
   - os: osx
     language: objective-c
     env:
@@ -32,69 +32,69 @@ matrix:
     - NP_BUILD_DEP="1.11.3"
     - NP_TEST_DEP="1.11.3"
     - PANDAS_DEP="0.20.3"
-  - language: cpp
-    os: linux
-    services:
-    - docker
-    before_script:
-    - docker pull quay.io/xhochy/arrow_manylinux1_x86_64_base:latest
-    before_install:
-    install:
-    script:
-    - mkdir -p dist
-    - pushd arrow/python/manylinux1
-    - git clone ../../ arrow
-    - docker build -t arrow-base-x86_64 -f Dockerfile-x86_64 .
-    - docker run --shm-size=2g --rm -e PYARROW_PARALLEL=3
-      -e SETUPTOOLS_SCM_PRETEND_VERSION=$PYARROW_VERSION
-      -v $PWD:/io arrow-base-x86_64 /io/build_arrow.sh
-    - popd
-    - sudo mv arrow/python/manylinux1/dist/* dist/
-  - language: ruby
-    os: linux
-    before_script:
-    before_install:
-    install:
-    script:
-    - (cd cpp-linux && travis_wait 40 rake apt:build APT_TARGETS=debian-stretch,ubuntu-trusty,ubuntu-xenial PARALLEL=yes DEBUG=no)
-    deploy:
-      provider: bintray
-      file: cpp-linux/apt/descriptor.json
-      user: kou
-      on:
-        all_branches: true
-      key:
-        secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
-  - language: ruby
-    os: linux
-    before_script:
-    before_install:
-    install:
-    script:
-    - (cd cpp-linux && travis_wait 40 rake apt:build APT_TARGETS=ubuntu-artful PARALLEL=yes DEBUG=no)
-    deploy:
-      provider: bintray
-      file: cpp-linux/apt/descriptor.json
-      user: kou
-      on:
-        all_branches: true
-      key:
-        secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
-  - language: ruby
-    os: linux
-    before_script:
-    before_install:
-    install:
-    script:
-    - (cd cpp-linux && rake yum:build PARALLEL=yes DEBUG=no)
-    deploy:
-      provider: bintray
-      file: cpp-linux/yum/descriptor.json
-      user: kou
-      on:
-        all_branches: true
-      key:
-        secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
+#  - language: cpp
+#    os: linux
+#    services:
+#    - docker
+#    before_script:
+#    - docker pull quay.io/xhochy/arrow_manylinux1_x86_64_base:latest
+#    before_install:
+#    install:
+#    script:
+#    - mkdir -p dist
+#    - pushd arrow/python/manylinux1
+#    - git clone ../../ arrow
+#    - docker build -t arrow-base-x86_64 -f Dockerfile-x86_64 .
+#    - docker run --shm-size=2g --rm -e PYARROW_PARALLEL=3
+#      -e SETUPTOOLS_SCM_PRETEND_VERSION=$PYARROW_VERSION
+#      -v $PWD:/io arrow-base-x86_64 /io/build_arrow.sh
+#    - popd
+#    - sudo mv arrow/python/manylinux1/dist/* dist/
+#  - language: ruby
+#    os: linux
+#    before_script:
+#    before_install:
+#    install:
+#    script:
+#    - (cd cpp-linux && travis_wait 40 rake apt:build APT_TARGETS=debian-stretch,ubuntu-trusty,ubuntu-xenial PARALLEL=yes DEBUG=no)
+#    deploy:
+#      provider: bintray
+#      file: cpp-linux/apt/descriptor.json
+#      user: kou
+#      on:
+#        all_branches: true
+#      key:
+#        secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
+#  - language: ruby
+#    os: linux
+#    before_script:
+#    before_install:
+#    install:
+#    script:
+#    - (cd cpp-linux && travis_wait 40 rake apt:build APT_TARGETS=ubuntu-artful PARALLEL=yes DEBUG=no)
+#    deploy:
+#      provider: bintray
+#      file: cpp-linux/apt/descriptor.json
+#      user: kou
+#      on:
+#        all_branches: true
+#      key:
+#        secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
+#  - language: ruby
+#    os: linux
+#    before_script:
+#    before_install:
+#    install:
+#    script:
+#    - (cd cpp-linux && rake yum:build PARALLEL=yes DEBUG=no)
+#    deploy:
+#      provider: bintray
+#      file: cpp-linux/yum/descriptor.json
+#      user: kou
+#      on:
+#        all_branches: true
+#      key:
+#        secure: "XXRJFBIOGS9urF047KcGlCqnMwKWa/EhW1Q2A3JGDd7Au+NHd99Rl/iRbtd44xVnfhosKGEH9mBGrqIZb/Tfn3RTtSi/KvN2RIoWmdsc3Kxk1eKd6O9kCLo4Y1GqboK8JVIHD4OYiyoVoFmnYLuinfdtrZrME5aU4pENnvwR3E0qvjhnhfwRG/Mtb93ePAqzih95gT7S0VWlsBV3FPa21aY7ctFteUP+DdqXZX1BmUnJB6cBxUGjpL8Bu8O/mt3l3yIrT9UkWM1g75l7zrP354x5+AMbHWBv7yGFa+JvbB+LXkrE2dV6j3Upf6ChnQKoTKv5Ur5LJBbCHyRieW3/uE/h47IR3c/3mRnhoSIl4QX7UoQkvTwHSE1Xpry3I2jE0WVHmq9NqT4iaxIv5oga+3I/W6h8brV3yCYfVUi1F90aRlnZHsCDmtAqzW1u9s1xqkO4z4/dennI0gniEn4kWfx0I7aCQQI/XmDri/33uTINprwBB5eHt6a7WGysrcO6Mv5I8EFEAJ5vkx2mDVw+rDFC7/R8YNA77PcJABlF7G/ZajcHqPnN5uyJC+P2m6JyHO+kTHemjW8pgf5vKvdNzdTN1AVFSO9Mv4O3NPyaADRl9DCCcqAk2LwL+SYqCVvIXu98Mb6uEoSOb+ZnpvseyydxNB6DtQSVtVUNdis5Ibw="
 before_install:
 # Also remove artefacts that depend on Boost
 - brew uninstall boost cgal postgis sfcgal
