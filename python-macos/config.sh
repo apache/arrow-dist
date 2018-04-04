@@ -85,6 +85,10 @@ function build_wheel {
       for dylib in *.dylib; do
         install_name_tool -id @rpath/${dylib} ${dylib}
       done
+      # Manually adjust libarrow_boost_filesystem.dylib which also references
+      # libarrow_boost_system.dylib. It's reference should be to the
+      # libarrow_boost_system.dylib with an @rpath prefix so that it also
+      # searches for it in the local folder.
       install_name_tool -change libarrow_boost_system.dylib @rpath/libarrow_boost_system.dylib libarrow_boost_filesystem.dylib
     popd
 
@@ -180,6 +184,8 @@ function build_wheel {
     export PYARROW_BUNDLE_ARROW_CPP=1
     export PYARROW_BUILD_TYPE='release'
     export PYARROW_CMAKE_OPTIONS="-DBOOST_ROOT=$arrow_boost_dist"
+    # Temporarily pin the version for the mac wheels
+    export PYARROW_VERSION=0.9.0.post1
     export SETUPTOOLS_SCM_PRETEND_VERSION=$PYARROW_VERSION
     pushd python
     python setup.py build_ext \
@@ -193,7 +199,6 @@ function build_wheel {
     # not the binaries from the build directory.
     for wheel in dist/*.whl; do
       pip install "$wheel"
-      unzip -l "$wheel"
     done
     mkdir -p tmp
     pushd tmp
