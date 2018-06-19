@@ -60,7 +60,6 @@ mkdir cpp/build
 cd cpp/build
 %cmake3 .. \
   -DCMAKE_BUILD_TYPE=$build_type \
-  -DARROW_ORC=ON \
 %if %{use_python}
   -DARROW_PYTHON=ON \
   -DPythonInterp_FIND_VERSION=ON \
