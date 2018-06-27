@@ -61,12 +61,15 @@ class PackageTask
     end
   end
 
-  def download(url, download_dir)
-    base_name = url.split("/").last
-    absolute_output_path = File.join(download_dir, base_name)
+  def download(url, output_path)
+    if File.directory?(output_path)
+      base_name = url.split("/").last
+      output_path = File.join(output_path, base_name)
+    end
+    absolute_output_path = File.expand_path(output_path)
 
     unless File.exist?(absolute_output_path)
-      mkdir_p(download_dir)
+      mkdir_p(File.dirname(absolute_output_path))
       rake_output_message "Downloading... #{url}"
       open(url) do |downloaded_file|
         File.open(absolute_output_path, "wb") do |output_file|
